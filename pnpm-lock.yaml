@@ -88,6 +88,12 @@ importers:
         specifier: 2.1.8
         version: 2.1.8(@types/node@22.19.19)(jsdom@25.0.1)(lightningcss@1.32.0)
 
+  packages/ai:
+    devDependencies:
+      typescript:
+        specifier: 5.7.2
+        version: 5.7.2
+
   packages/auth:
     dependencies:
       '@estateos/db':
@@ -137,6 +143,12 @@ importers:
       vitest:
         specifier: 2.1.8
         version: 2.1.8(@types/node@22.19.19)(jsdom@25.0.1)(lightningcss@1.32.0)
+
+  packages/notifications:
+    devDependencies:
+      typescript:
+        specifier: 5.7.2
+        version: 5.7.2
 
 packages:
 
