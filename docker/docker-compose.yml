@@ -18,7 +18,7 @@ services:
       retries: 5
 
   web:
-    image: estateos:phase0
+    image: estateos:phase1
     container_name: estateos_web
     restart: unless-stopped
     environment:
@@ -31,13 +31,25 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_FROM: ${SMTP_FROM}
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:noreply@estateos.ru}
+      CRON_SECRET: ${CRON_SECRET}
+      AUDIO_STORAGE_ROOT: /var/lib/estateos/audio
       NODE_ENV: production
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "30220:3200"
+    volumes:
+      - estateos_audio:/var/lib/estateos/audio
 
 volumes:
   estateos_pg_data:
+    driver: local
+  estateos_audio:
     driver: local

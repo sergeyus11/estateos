@@ -1,11 +1,14 @@
 {
   "name": "@estateos/notifications",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "dependencies": {},
+  "dependencies": {
+    "nodemailer": "6.9.16"
+  },
   "devDependencies": {
+    "@types/nodemailer": "6.4.17",
     "typescript": "5.7.2"
   }
 }

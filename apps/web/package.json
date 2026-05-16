@@ -17,8 +17,14 @@
     "react-dom": "19.0.0",
     "@estateos/auth": "workspace:*",
     "@estateos/db": "workspace:*",
+    "@estateos/ai": "workspace:*",
+    "@estateos/notifications": "workspace:*",
     "drizzle-orm": "0.38.0",
-    "better-auth": "1.1.6"
+    "better-auth": "1.1.6",
+    "nanoid": "5.0.9",
+    "lucide-react": "0.469.0",
+    "zod": "3.24.1",
+    "web-push": "3.6.7"
   },
   "devDependencies": {
     "@types/react": "19.0.0",
@@ -34,6 +40,7 @@
     "@testing-library/react": "16.1.0",
     "@testing-library/jest-dom": "6.6.3",
     "jsdom": "25.0.1",
-    "@playwright/test": "1.49.0"
+    "@playwright/test": "1.49.0",
+    "@types/web-push": "3.6.4"
   }
 }

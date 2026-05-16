@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { signIn } from '@/lib/auth-client';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
+function LoginContent() {
+  const params = useSearchParams();
+  const emailFromUrl = params?.get('email') || '';
+  const autosend = params?.get('autosend') === '1';
+
+  const [email, setEmail] = useState(emailFromUrl);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function send() {
     setStatus('sending');
     setErrorMsg('');
     try {
@@ -20,6 +24,18 @@ export default function LoginPage() {
       setErrorMsg(err instanceof Error ? err.message : 'Unknown error');
     }
   }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await send();
+  }
+
+  useEffect(() => {
+    if (autosend && emailFromUrl && status === 'idle') {
+      void send();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="mx-auto max-w-md px-6 py-24">
@@ -51,10 +67,20 @@ export default function LoginPage() {
             {status === 'sending' ? 'Отправляем...' : 'Получить ссылку'}
           </button>
           {errorMsg && (
-            <p className="text-sm text-red-600" data-testid="error">{errorMsg}</p>
+            <p className="text-sm text-red-600" data-testid="error">
+              {errorMsg}
+            </p>
           )}
         </form>
       )}
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContent />
+    </Suspense>
   );
 }
