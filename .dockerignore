@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+.turbo
+.git
+.github
+docs
+*.md
+.env
+.env.local
+tests
+playwright-report
+test-results
+.DS_Store
