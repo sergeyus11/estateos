@@ -1,10 +1,10 @@
-import { pgTable, uuid, text, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const userRole = pgEnum('user_role', ['admin', 'agent']);
 
 export const organizations = pgTable('organizations', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id').primaryKey(),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   createdAt: timestamp('created_at', { withTimezone: true })
@@ -13,14 +13,14 @@ export const organizations = pgTable('organizations', {
 });
 
 export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id').primaryKey(),
   email: text('email').notNull().unique(),
   firstName: text('first_name'),
   lastName: text('last_name'),
   telegramUsername: text('telegram_username'),
   telegramChatId: text('telegram_chat_id'),
   role: userRole('role').notNull(),
-  organizationId: uuid('organization_id')
+  organizationId: text('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
   emailVerified: boolean('email_verified').notNull().default(false),
@@ -31,8 +31,8 @@ export const users = pgTable('users', {
 });
 
 export const sessions = pgTable('sessions', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id')
+  id: text('id').primaryKey(),
+  userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   token: text('token').notNull().unique(),
@@ -45,11 +45,14 @@ export const sessions = pgTable('sessions', {
 });
 
 export const verificationTokens = pgTable('verification_tokens', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: text('id').primaryKey(),
   identifier: text('identifier').notNull(),
-  token: text('token').notNull().unique(),
+  value: text('value').notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .notNull()
     .default(sql`now()`),
 });

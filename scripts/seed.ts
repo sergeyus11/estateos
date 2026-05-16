@@ -14,9 +14,10 @@ async function main() {
 
   let orgId: string;
   if (existingOrg.length === 0) {
+    const orgIdValue = crypto.randomUUID();
     const [created] = await db
       .insert(organizations)
-      .values({ name: 'АН Сусанны', slug: orgSlug })
+      .values({ id: orgIdValue, name: 'АН Сусанны', slug: orgSlug })
       .returning();
     orgId = created.id;
     console.log(`✓ Created Organization "${created.name}" (${created.id})`);
@@ -29,9 +30,11 @@ async function main() {
   const existing = await db.select().from(users).where(eq(users.email, adminEmail)).limit(1);
 
   if (existing.length === 0) {
+    const userIdValue = crypto.randomUUID();
     const [created] = await db
       .insert(users)
       .values({
+        id: userIdValue,
         email: adminEmail,
         firstName: 'Сусанна',
         role: 'admin',
