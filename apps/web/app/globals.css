@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50:  oklch(0.97 0.02 240);
+  --color-brand-500: oklch(0.65 0.18 240);
+  --color-brand-700: oklch(0.45 0.18 240);
+  --color-accent:    oklch(0.70 0.20 25);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
