@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: estateos
+          POSTGRES_PASSWORD: estateos
+          POSTGRES_DB: estateos
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U estateos"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.1.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Drizzle migrate
+        env:
+          DATABASE_URL: postgresql://estateos:estateos@localhost:5432/estateos
+        run: pnpm --filter @estateos/db migrate
+
+      - name: Typecheck web
+        run: pnpm --filter @estateos/web exec tsc --noEmit
+
+      - name: Typecheck auth
+        run: pnpm --filter @estateos/auth exec tsc --noEmit
+
+      - name: Unit tests
+        run: pnpm --filter @estateos/web test
+
+      - name: Build
+        env:
+          DATABASE_URL: postgresql://estateos:estateos@localhost:5432/estateos
+          BETTER_AUTH_SECRET: ci-test-secret-not-real-32bytes-padding-padding
+          BETTER_AUTH_URL: http://localhost:3200
+          NEXT_PUBLIC_AUTH_URL: http://localhost:3200
+          SMTP_HOST: localhost
+          SMTP_PORT: 25
+          SMTP_USER: ci
+          SMTP_PASSWORD: ci
+          SMTP_FROM: ci@estateos.ru
+        run: pnpm --filter @estateos/web build
