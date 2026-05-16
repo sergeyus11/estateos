@@ -1,7 +1,9 @@
-import { pgTable, text, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, pgEnum, jsonb } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const userRole = pgEnum('user_role', ['admin', 'agent']);
+export const contactType = pgEnum('contact_type', ['showing', 'whatsapp', 'phone', 'other']);
+export const reportStatus = pgEnum('report_status', ['draft', 'final']);
 
 export const organizations = pgTable('organizations', {
   id: text('id').primaryKey(),
@@ -57,6 +59,94 @@ export const verificationTokens = pgTable('verification_tokens', {
     .default(sql`now()`),
 });
 
+export type ReportFields = {
+  object: string | null;
+  client: string | null;
+  budget: string | null;
+  reaction: string | null;
+  nextStep: string | null;
+};
+
+export type ReportRound = {
+  transcript: string;
+  question: string | null;
+  answer: string | null;
+  ts: string;
+};
+
+export const showReports = pgTable('show_reports', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id')
+    .notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  agentId: text('agent_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  voiceUrl: text('voice_url'),
+  transcript: text('transcript'),
+  fields: jsonb('fields').notNull().$type<ReportFields>(),
+  rounds: jsonb('rounds').notNull().default([]).$type<ReportRound[]>(),
+  contactType: contactType('contact_type').notNull().default('showing'),
+  status: reportStatus('status').notNull().default('draft'),
+  followUpQuestion: text('follow_up_question'),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  finalizedAt: timestamp('finalized_at', { withTimezone: true }),
+});
+
+export const reminderLog = pgTable('reminder_log', {
+  id: text('id').primaryKey(),
+  agentId: text('agent_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  sentAt: timestamp('sent_at', { withTimezone: true }).notNull().default(sql`now()`),
+  channel: text('channel').notNull(),
+  forDate: text('for_date').notNull(),
+});
+
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  endpoint: text('endpoint').notNull().unique(),
+  p256dh: text('p256dh').notNull(),
+  authKey: text('auth_key').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`now()`),
+});
+
+export const magicLinkInvites = pgTable('magic_link_invites', {
+  id: text('id').primaryKey(),
+  token: text('token').notNull().unique(),
+  email: text('email').notNull(),
+  organizationId: text('organization_id')
+    .notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  invitedByUserId: text('invited_by_user_id')
+    .notNull()
+    .references(() => users.id),
+  role: userRole('role').notNull(),
+  firstName: text('first_name'),
+  lastName: text('last_name'),
+  telegramUsername: text('telegram_username'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  consumedAt: timestamp('consumed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`now()`),
+});
+
+export const agentSettings = pgTable('agent_settings', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  dayOffDate: text('day_off_date'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
+});
+
 export type Organization = typeof organizations.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+export type ShowReport = typeof showReports.$inferSelect;
+export type NewShowReport = typeof showReports.$inferInsert;
+export type MagicLinkInvite = typeof magicLinkInvites.$inferSelect;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
