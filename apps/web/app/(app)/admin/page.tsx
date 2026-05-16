@@ -64,7 +64,7 @@ export default async function AdminHome() {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Link
           href={'/admin/reports' as never}
           className="rounded-lg bg-brand-500 px-5 py-2 text-white font-medium hover:bg-brand-700"
@@ -76,6 +76,12 @@ export default async function AdminHome() {
           className="rounded-lg border bg-white px-5 py-2 font-medium hover:bg-neutral-50"
         >
           Команда →
+        </Link>
+        <Link
+          href={'/admin/training' as never}
+          className="rounded-lg border bg-white px-5 py-2 font-medium hover:bg-neutral-50"
+        >
+          Тренажёр →
         </Link>
       </div>
     </div>

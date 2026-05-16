@@ -143,6 +143,66 @@ export const agentSettings = pgTable('agent_settings', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
 });
 
+export const trainingSessionStatus = pgEnum('training_session_status', [
+  'in_progress',
+  'completed',
+  'abandoned',
+]);
+
+export type TrainingTurn = {
+  role: 'agent' | 'client';
+  text: string;
+  audioUrl: string | null;
+  ts: string;
+};
+
+export type SpinAnalysis = {
+  situation: number;
+  problem: number;
+  implication: number;
+  needPayoff: number;
+  score: number;
+  feedback: string;
+};
+
+export const trainingPersonas = pgTable('training_personas', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id').references(() => organizations.id, {
+    onDelete: 'cascade',
+  }),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  ageHint: text('age_hint'),
+  budgetHint: text('budget_hint'),
+  systemPrompt: text('system_prompt').notNull(),
+  voiceId: text('voice_id').notNull(),
+  isStock: boolean('is_stock').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const trainingSessions = pgTable('training_sessions', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id')
+    .notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  agentId: text('agent_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  personaId: text('persona_id')
+    .notNull()
+    .references(() => trainingPersonas.id, { onDelete: 'restrict' }),
+  transcript: jsonb('transcript').notNull().default([]).$type<TrainingTurn[]>(),
+  durationSec: text('duration_sec'),
+  spinAnalysis: jsonb('spin_analysis').$type<SpinAnalysis | null>(),
+  status: trainingSessionStatus('status').notNull().default('in_progress'),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+});
+
 export type Organization = typeof organizations.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -150,3 +210,5 @@ export type ShowReport = typeof showReports.$inferSelect;
 export type NewShowReport = typeof showReports.$inferInsert;
 export type MagicLinkInvite = typeof magicLinkInvites.$inferSelect;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type TrainingPersona = typeof trainingPersonas.$inferSelect;
+export type TrainingSession = typeof trainingSessions.$inferSelect;

@@ -55,7 +55,12 @@ export function AgentHome({ firstName, recent }: { firstName: string | null; rec
       {!active && (
         <div className="space-y-6">
           <MicRecorder onUpload={startUpload} />
-          <PushSubscribeButton />
+          <div className="flex items-center justify-between">
+            <PushSubscribeButton />
+            <a href="/agent/training" className="text-xs text-brand-500 underline">
+              SPIN-тренажёр →
+            </a>
+          </div>
           <div>
             <h2 className="text-lg font-semibold">Последние показы</h2>
             {recent.length === 0 ? (

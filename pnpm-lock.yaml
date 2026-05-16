@@ -114,6 +114,9 @@ importers:
       '@deepgram/sdk':
         specifier: 3.10.1
         version: 3.10.1
+      '@estateos/db':
+        specifier: workspace:*
+        version: link:../db
       openai:
         specifier: 4.77.0
         version: 4.77.0(zod@3.25.76)
