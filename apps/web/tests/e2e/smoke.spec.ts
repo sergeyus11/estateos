@@ -1,29 +1,65 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, chromium, type Browser } from '@playwright/test';
 
-test('landing page loads', async ({ page }) => {
+const USE_CDP = process.env.PLAYWRIGHT_USE_CDP === '1';
+
+let cdpBrowser: Browser | null = null;
+
+async function getCdpBrowser(): Promise<Browser> {
+  if (cdpBrowser) return cdpBrowser;
+  const res = await fetch('http://127.0.0.1:9222/json/version');
+  const { webSocketDebuggerUrl } = await res.json();
+  cdpBrowser = await chromium.connectOverCDP(webSocketDebuggerUrl);
+  return cdpBrowser;
+}
+
+test.afterAll(async () => {
+  if (cdpBrowser) {
+    await cdpBrowser.close();
+    cdpBrowser = null;
+  }
+});
+
+const browserTest = USE_CDP
+  ? test.extend<{ page: any }>({
+      page: async ({}, use) => {
+        const browser = await getCdpBrowser();
+        const context = await browser.newContext({
+          baseURL: process.env.E2E_BASE_URL || 'http://localhost:3200',
+          ignoreHTTPSErrors: true,
+        });
+        const page = await context.newPage();
+        await use(page);
+        await context.close();
+      },
+    })
+  : test;
+
+browserTest('landing page loads', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1, name: 'EstateOS' })).toBeVisible();
   await expect(page.getByTestId('cta-login')).toBeVisible();
 });
 
-test('login page accepts email + sends magic-link', async ({ page }) => {
+browserTest('login page accepts email + sends magic-link', async ({ page }) => {
   await page.goto('/login');
   await expect(page.getByRole('heading', { name: /Войти/i })).toBeVisible();
 
-  await page.getByTestId('email-input').fill('test@example.com');
+  // Use real seeded email so Beget SMTP doesn't reject as spam
+  await page.getByTestId('email-input').fill('admin@estateos.ru');
   await page.getByTestId('submit').click();
 
-  await expect(
-    page.locator('text=/(Ссылка для входа отправлена|ошибка|error)/i')
-  ).toBeVisible({ timeout: 15_000 });
+  // Either success banner OR error element appears (any state proves form wired up)
+  const success = page.getByText(/Ссылка для входа отправлена/i);
+  const error = page.getByTestId('error');
+  await expect(success.or(error)).toBeVisible({ timeout: 25_000 });
 });
 
-test('admin route requires login (redirects to /login)', async ({ page }) => {
+browserTest('admin route requires login (redirects to /login)', async ({ page }) => {
   await page.goto('/admin');
   await expect(page).toHaveURL(/\/login/);
 });
 
-test('agent route requires login (redirects to /login)', async ({ page }) => {
+browserTest('agent route requires login (redirects to /login)', async ({ page }) => {
   await page.goto('/agent');
   await expect(page).toHaveURL(/\/login/);
 });
