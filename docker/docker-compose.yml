@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: estateos_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: estateos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-estateos_dev}
+      POSTGRES_DB: estateos
+    volumes:
+      - estateos_pg_data:/var/lib/postgresql/data
+    ports:
+      - "30210:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estateos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: estateos_web
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://estateos:${POSTGRES_PASSWORD:-estateos_dev}@postgres:5432/estateos
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://estateos.ru}
+      NEXT_PUBLIC_AUTH_URL: ${NEXT_PUBLIC_AUTH_URL:-https://estateos.ru}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "30200:3200"
+
+volumes:
+  estateos_pg_data:
+    driver: local
