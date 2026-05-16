@@ -141,3 +141,29 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# EstateOS-specific
+.next/
+out/
+.turbo/
+
+# Env
+.env
+.env.local
+.env*.local
+!.env.example
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# pnpm
+.pnpm-store/
+
+# Playwright
+test-results/
+playwright-report/
+
+# pgBackRest config contains cipher pass — never commit
+docker/pgbackrest.conf
