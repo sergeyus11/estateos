@@ -14,7 +14,11 @@
   "dependencies": {
     "next": "15.1.0",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "@estateos/auth": "workspace:*",
+    "@estateos/db": "workspace:*",
+    "drizzle-orm": "0.38.0",
+    "better-auth": "1.1.6"
   },
   "devDependencies": {
     "@types/react": "19.0.0",

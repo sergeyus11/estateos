@@ -1,0 +1,17 @@
+{
+  "name": "@estateos/auth",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "better-auth": "1.1.6",
+    "@estateos/db": "workspace:*",
+    "drizzle-orm": "0.38.0",
+    "nodemailer": "6.9.16"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "6.4.17",
+    "typescript": "5.7.2"
+  }
+}
