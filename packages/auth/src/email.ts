@@ -52,7 +52,7 @@ export async function sendMagicLink(
 
 Войти: ${magicLink}
 
-Ссылка действительна 7 дней. Если вы её не запрашивали — просто проигнорируйте письмо.
+Ссылка действительна 24 часа. Если вы её не запрашивали — просто проигнорируйте письмо.
 
 — Команда EstateOS
 `,
@@ -85,7 +85,7 @@ export async function sendMagicLink(
     </td></tr>
     <tr><td style="padding:24px 32px 28px;border-top:1px solid #EFE8DF;background:#FBF8F4">
       <p style="margin:0;font-size:12px;line-height:1.5;color:#A89E94">
-        Ссылка действительна 7 дней. Если вы не запрашивали вход — просто проигнорируйте это письмо.
+        Ссылка действительна 24 часа. Если вы не запрашивали вход — просто проигнорируйте это письмо.
       </p>
       <p style="margin:8px 0 0;font-size:12px;color:#A89E94">— Команда EstateOS</p>
     </td></tr>

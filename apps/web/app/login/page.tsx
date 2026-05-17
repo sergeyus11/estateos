@@ -132,8 +132,9 @@ function LoginContent() {
                   {errorMsg}
                 </p>
               )}
-              <p style={{ fontSize: 11, color: 'var(--ink-3)', textAlign: 'center', marginTop: 4 }}>
-                Доступ&nbsp;— по приглашению. Если вашего email нет в&nbsp;системе, попросите владельца агентства добавить вас.
+              <p style={{ fontSize: 11, color: 'var(--ink-3)', textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
+                Запомним вас на&nbsp;этом устройстве на&nbsp;90 дней&nbsp;— пароль не&nbsp;нужен.<br/>
+                Ссылка из&nbsp;письма действует 24&nbsp;часа. Доступ по&nbsp;приглашению.
               </p>
             </form>
           )}

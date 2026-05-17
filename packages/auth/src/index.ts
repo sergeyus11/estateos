@@ -5,6 +5,8 @@ import { db, users, sessions, verificationTokens, organizations } from '@estateo
 import { eq } from 'drizzle-orm';
 import { sendMagicLink } from './email';
 
+const DAY = 60 * 60 * 24;
+
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL!,
@@ -13,6 +15,13 @@ export const auth = betterAuth({
     schema: { user: users, session: sessions, verification: verificationTokens },
   }),
   emailAndPassword: { enabled: false },
+  session: {
+    // Session lives 90 days; rolling refresh every 7 days while user is active.
+    // Magic-link is intentionally short-lived (1 day) — session is where the
+    // long-lived trust lives, not the link.
+    expiresIn: DAY * 90,
+    updateAge: DAY * 7,
+  },
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
@@ -28,7 +37,7 @@ export const auth = betterAuth({
         }
         await sendMagicLink(email, url, orgName);
       },
-      expiresIn: 60 * 60 * 24 * 7,
+      expiresIn: DAY,
     }),
   ],
 });
