@@ -42,10 +42,17 @@ export async function sendMagicLink(
   magicLink: string,
   _organizationName?: string
 ): Promise<void> {
+  // Subject включает HH:MM МСК — Gmail/Mail.ru иначе сворачивают все magic-link'и
+  // в один thread по теме, и новое письмо легко не заметить.
+  const mskTime = new Date().toLocaleTimeString('ru-RU', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Moscow',
+  });
   await transporter.sendMail({
     from: process.env.SMTP_FROM!,
     to,
-    subject: 'Вход в EstateOS',
+    subject: `Вход в EstateOS · ${mskTime}`,
     text: `Здравствуйте,
 
 это ссылка для входа в EstateOS — операционную AI-платформу для агентств недвижимости.
