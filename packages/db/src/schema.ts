@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, pgEnum, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, pgEnum, jsonb, integer, numeric } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const userRole = pgEnum('user_role', ['admin', 'agent']);
@@ -231,11 +231,11 @@ export const morningNarratives = pgTable('morning_narratives', {
   periodDate: text('period_date').notNull(),
   narrativeText: text('narrative_text'),
   audioPath: text('audio_path'),
-  audioDurationSec: text('audio_duration_sec'),
+  audioDurationSec: integer('audio_duration_sec'),
   stats: jsonb('stats').notNull().default({}).$type<NarrativeStats>(),
   status: narrativeStatus('status').notNull().default('pending'),
   errorMessage: text('error_message'),
-  costUsd: text('cost_usd'),
+  costUsd: numeric('cost_usd', { precision: 10, scale: 5 }),
   generatedAt: timestamp('generated_at', { withTimezone: true }),
   listenedAt: timestamp('listened_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true })
