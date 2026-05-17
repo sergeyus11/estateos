@@ -7,9 +7,20 @@ import { sendMagicLink } from './email';
 
 const DAY = 60 * 60 * 24;
 
+// Origins, с которых разрешено инициировать sign-in. Better-Auth по умолчанию
+// ругается «Invalid origin» и блокирует запрос с UI-форм.
+const AUTH_URL = process.env.BETTER_AUTH_URL ?? 'https://estateos.ru';
+const TRUSTED_ORIGINS = [
+  AUTH_URL,
+  'https://estateos.ru',
+  'http://localhost:3200',
+  'http://127.0.0.1:3200',
+];
+
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL!,
+  baseURL: AUTH_URL,
+  trustedOrigins: TRUSTED_ORIGINS,
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: { user: users, session: sessions, verification: verificationTokens },
