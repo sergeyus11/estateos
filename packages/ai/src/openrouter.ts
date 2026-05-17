@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { getProxyAgent } from './httpAgent';
 
 let _client: OpenAI | null = null;
 
@@ -14,6 +15,7 @@ export function getOpenRouterClient(): OpenAI {
       'HTTP-Referer': 'https://estateos.ru',
       'X-Title': 'EstateOS',
     },
+    httpAgent: getProxyAgent(),
   });
   return _client;
 }

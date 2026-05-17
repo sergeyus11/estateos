@@ -10,6 +10,7 @@
   "dependencies": {
     "@deepgram/sdk": "3.10.1",
     "@estateos/db": "workspace:*",
+    "https-proxy-agent": "^9.0.0",
     "openai": "4.77.0"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { getProxyAgent } from './httpAgent';
 
 let _openai: OpenAI | null = null;
 
@@ -7,7 +8,10 @@ function getClient(): OpenAI {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY is required');
   }
-  _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  _openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    httpAgent: getProxyAgent(),
+  });
   return _openai;
 }
 

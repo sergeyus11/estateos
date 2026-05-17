@@ -18,9 +18,11 @@ services:
       retries: 5
 
   web:
-    image: estateos:phase2
+    image: estateos:phase2.1
     container_name: estateos_web
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       DATABASE_URL: postgresql://estateos:${POSTGRES_PASSWORD:-estateos_dev}@postgres:5432/estateos
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -40,6 +42,9 @@ services:
       CRON_SECRET: ${CRON_SECRET}
       AUDIO_STORAGE_ROOT: /var/lib/estateos/audio
       NODE_ENV: production
+      HTTPS_PROXY: http://host.docker.internal:10809
+      HTTP_PROXY: http://host.docker.internal:10809
+      NO_PROXY: localhost,127.0.0.1,postgres,estateos_db
     depends_on:
       postgres:
         condition: service_healthy
