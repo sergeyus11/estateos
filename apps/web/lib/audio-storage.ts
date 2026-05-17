@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { nanoid } from 'nanoid';
 
@@ -19,4 +19,19 @@ export async function saveAudio(buffer: Buffer, mimeType: string): Promise<strin
   const filePath = path.join(dir, `${id}.${ext}`);
   await writeFile(filePath, buffer);
   return `/audio/${today}/${id}.${ext}`;
+}
+
+export async function saveNarrativeAudio(narrativeId: string, audio: Buffer): Promise<string> {
+  const date = new Date().toISOString().slice(0, 10);
+  const dir = path.join(STORAGE_ROOT, 'narratives', date);
+  await mkdir(dir, { recursive: true });
+  const filename = `${narrativeId}.mp3`;
+  const fullPath = path.join(dir, filename);
+  await writeFile(fullPath, audio);
+  return path.relative(STORAGE_ROOT, fullPath);
+}
+
+export async function readNarrativeAudio(relativePath: string): Promise<Buffer> {
+  const fullPath = path.join(STORAGE_ROOT, relativePath);
+  return readFile(fullPath);
 }
