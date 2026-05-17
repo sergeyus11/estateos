@@ -9,7 +9,7 @@ function nowInZone(timeZone?: string): Parts {
   const fmt = new Intl.DateTimeFormat('ru-RU', {
     hour: '2-digit',
     minute: '2-digit',
-    timeZone, // undefined = local browser zone
+    timeZone,
     hour12: false,
   });
   const parts = fmt.formatToParts(d);
@@ -21,7 +21,6 @@ function nowInZone(timeZone?: string): Parts {
 function browserTzAbbrev(): string {
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    // Москва даёт «Europe/Moscow» — для неё показываем «МСК», для других — короткий offset «UTC+3»
     if (tz === 'Europe/Moscow') return 'МСК';
     const offsetMin = -new Date().getTimezoneOffset();
     const sign = offsetMin >= 0 ? '+' : '−';
@@ -33,11 +32,13 @@ function browserTzAbbrev(): string {
   }
 }
 
-/** Локальное время браузера, обновляется каждую секунду, с моргающим двоеточием. */
+/** Локальное время браузера. SSR-плейсхолдер `--:--` чтобы не было mismatch. */
 export function LiveClock() {
-  const [{ hh, mm }, setT] = useState<Parts>(() => nowInZone());
+  const [mounted, setMounted] = useState(false);
+  const [{ hh, mm }, setT] = useState<Parts>({ hh: '--', mm: '--' });
 
   useEffect(() => {
+    setMounted(true);
     const tick = () => setT(nowInZone());
     tick();
     const t = setInterval(tick, 1000);
@@ -46,28 +47,29 @@ export function LiveClock() {
 
   return (
     <span className="live-clock" suppressHydrationWarning>
-      {hh}
+      {mounted ? hh : '--'}
       <span className="live-clock__colon" aria-hidden="true">:</span>
-      {mm}
+      {mounted ? mm : '--'}
     </span>
   );
 }
 
-/** Короткий бейдж «МСК HH:MM» (или UTC+X), пригоден для top-bar справа сверху. */
+/** Маленький badge «МСК HH:MM» (top-right плитки). На сервере не рендерится. */
 export function MoscowTimeBadge() {
-  const [{ hh, mm }, setT] = useState<Parts>(() => nowInZone('Europe/Moscow'));
-  const [localTz, setLocalTz] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+  const [{ hh, mm }, setT] = useState<Parts>({ hh: '--', mm: '--' });
+  const [isMsk, setIsMsk] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    setIsMsk(browserTzAbbrev() === 'МСК');
     const tick = () => setT(nowInZone('Europe/Moscow'));
     tick();
-    setLocalTz(browserTzAbbrev());
     const t = setInterval(tick, 1000);
     return () => clearInterval(t);
   }, []);
 
-  // Если local TZ уже МСК — показываем serverlessly «=local», иначе разница.
-  const isMsk = localTz === 'МСК';
+  if (!mounted) return null;
 
   return (
     <span className="msk-badge" suppressHydrationWarning title="Московское время">
@@ -78,7 +80,7 @@ export function MoscowTimeBadge() {
   );
 }
 
-/** Локальный TZ-suffix для KPI «Сейчас» — «(local)» или название. */
+/** Local TZ suffix («МСК» / «UTC+3» / «UTC-5») рядом с large time. SSR-skip. */
 export function LocalTimezoneLabel() {
   const [tz, setTz] = useState<string>('');
   useEffect(() => setTz(browserTzAbbrev()), []);

@@ -752,13 +752,15 @@ img, svg { display: block; max-width: 100%; }
   letter-spacing: 0.08em;
 }
 
-/* KPI «Сейчас» — local time в центре, МСК-badge в правом нижнем углу */
+/* KPI «Сейчас» — local time в центре, МСК-badge маленьким в правом верхнем углу */
 .kpi--clock { position: relative; }
 .kpi__msk-corner {
   position: absolute;
-  bottom: 14px;
-  right: 16px;
+  top: 14px;
+  right: 14px;
   pointer-events: none;
+  /* поверх sparkline'ов / других абсолютных элементов */
+  z-index: 1;
 }
 .msk-badge__local-hint {
   margin-left: 4px;
