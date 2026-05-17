@@ -95,7 +95,7 @@ export default async function AnalyticsPage() {
         {perAgent.length === 0 ? (
           <p className="mt-2 text-sm text-neutral-500">пока пусто</p>
         ) : (
-          <table className="mt-3 w-full overflow-hidden rounded-lg bg-white text-sm">
+          <table className="mt-3 w-full overflow-hidden rounded-2xl bg-white text-sm">
             <thead className="bg-neutral-100 text-xs uppercase text-neutral-500">
               <tr>
                 <th className="px-3 py-2 text-left">Агент</th>
@@ -129,7 +129,7 @@ export default async function AnalyticsPage() {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-lg bg-white p-5 shadow-sm">
+    <div className="rounded-2xl bg-white p-5 shadow-sm">
       <div className="text-xs uppercase text-neutral-500">{label}</div>
       <div className="mt-1 text-3xl font-semibold">{value}</div>
     </div>

@@ -133,7 +133,7 @@ export function SessionPlayer({
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       {status === 'in_progress' && (
-        <div className="rounded-lg bg-white p-3">
+        <div className="rounded-2xl bg-white p-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -174,11 +174,11 @@ export function SessionPlayer({
             <Metric label="Implication" value={analysis.implication} />
             <Metric label="Need-payoff" value={analysis.needPayoff} />
           </div>
-          <div className="rounded-lg bg-white p-3 text-center">
+          <div className="rounded-2xl bg-white p-3 text-center">
             <div className="text-xs uppercase text-neutral-500">Общий балл</div>
             <div className="text-3xl font-semibold">{analysis.score}/10</div>
           </div>
-          <div className="rounded-lg bg-white p-3">
+          <div className="rounded-2xl bg-white p-3">
             <div className="text-xs uppercase text-neutral-500">Рекомендация</div>
             <p className="mt-1 whitespace-pre-wrap text-sm text-neutral-700">
               {analysis.feedback}
@@ -192,7 +192,7 @@ export function SessionPlayer({
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg bg-white p-2 text-center">
+    <div className="rounded-2xl bg-white p-2 text-center">
       <div className="text-xs uppercase text-neutral-500">{label}</div>
       <div className="text-xl font-semibold">{value}</div>
     </div>

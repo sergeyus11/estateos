@@ -10,7 +10,7 @@ export default function LandingPage() {
       <div className="mt-12">
         <a
           href="/login"
-          className="inline-flex items-center rounded-lg bg-brand-500 px-6 py-3 text-white font-medium hover:bg-brand-700 transition"
+          className="inline-flex items-center rounded-xl bg-brand-500 px-6 py-3 text-white font-medium hover:bg-brand-700 transition"
           data-testid="cta-login"
         >
           Войти

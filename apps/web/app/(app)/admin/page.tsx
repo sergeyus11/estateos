@@ -47,17 +47,17 @@ export default async function AdminHome() {
       <h1 className="text-2xl font-semibold">Добро пожаловать</h1>
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
           <div className="text-xs uppercase text-neutral-500">Сегодня</div>
           <div className="mt-1 text-3xl font-semibold">{todayCount}</div>
           <div className="text-sm text-neutral-500">показов</div>
         </div>
-        <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
           <div className="text-xs uppercase text-neutral-500">7 дней</div>
           <div className="mt-1 text-3xl font-semibold">{weekCount}</div>
           <div className="text-sm text-neutral-500">показов</div>
         </div>
-        <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
           <div className="text-xs uppercase text-neutral-500">Команда</div>
           <div className="mt-1 text-3xl font-semibold">{agentCount}</div>
           <div className="text-sm text-neutral-500">активных агентов</div>

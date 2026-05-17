@@ -41,7 +41,7 @@ export function InviteForm() {
   }
 
   return (
-    <form onSubmit={submit} className="mt-3 max-w-md space-y-3 rounded-lg bg-white p-4">
+    <form onSubmit={submit} className="mt-3 max-w-md space-y-3 rounded-2xl bg-white p-4">
       <label className="block">
         <span className="text-sm font-medium">Email *</span>
         <input

@@ -11,7 +11,7 @@ export function TrendChart({
 }) {
   if (data.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-4">
+      <div className="rounded-2xl bg-white p-4">
         <h3 className="text-sm font-medium">{title}</h3>
         <p className="mt-2 text-xs text-neutral-500">нет данных</p>
       </div>
@@ -31,7 +31,7 @@ export function TrendChart({
     .join(' ');
   const total = data.reduce((s, d) => s + d.value, 0);
   return (
-    <div className="rounded-lg bg-white p-4">
+    <div className="rounded-2xl bg-white p-4">
       <div className="flex items-baseline justify-between">
         <h3 className="text-sm font-medium">{title}</h3>
         <span className="text-xs text-neutral-500">всего {total}</span>

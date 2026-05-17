@@ -32,7 +32,7 @@ export default async function NarratorDetail({ params }: { params: Promise<{ id:
       </header>
 
       {row.status === 'ready' && row.audioPath && (
-        <section className="space-y-3 rounded-lg bg-white p-5">
+        <section className="space-y-3 rounded-2xl bg-white p-5">
           <NarratorPlayer narrativeId={row.id} audioSrc={`/api/admin/narratives/${row.id}/audio`} />
           <details className="text-sm">
             <summary className="cursor-pointer text-neutral-500">показать текст</summary>

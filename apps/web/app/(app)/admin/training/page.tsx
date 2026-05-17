@@ -52,7 +52,7 @@ export default async function AdminTrainingPage() {
             Пока никто не завершил сессию. Когда агенты потренируются — здесь будет таблица.
           </p>
         ) : (
-          <table className="mt-3 w-full overflow-hidden rounded-lg bg-white text-sm">
+          <table className="mt-3 w-full overflow-hidden rounded-2xl bg-white text-sm">
             <thead className="bg-neutral-100">
               <tr>
                 <th className="px-3 py-2 text-left">Агент</th>

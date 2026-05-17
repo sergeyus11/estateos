@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#3b82f6',
+  themeColor: '#C4836A',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,8 +17,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+        />
       </head>
-      <body className="min-h-screen bg-white text-neutral-900">
+      <body className="min-h-screen text-[var(--color-ink)]" style={{ backgroundColor: 'var(--color-bg)' }}>
         {children}
         <SwRegister />
       </body>

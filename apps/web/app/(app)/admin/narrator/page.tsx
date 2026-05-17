@@ -29,7 +29,7 @@ export default async function NarratorListPage() {
       </header>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg bg-white p-6 text-neutral-500">
+        <p className="rounded-2xl bg-white p-6 text-neutral-500">
           Пока пусто. Первый разбор придёт завтра в 09:30 МСК.
         </p>
       ) : (
