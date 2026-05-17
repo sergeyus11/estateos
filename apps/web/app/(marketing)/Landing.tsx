@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useRef } from 'react';
+import { SwipeToEnter } from './SwipeToEnter';
 
 /* ------------------------------------------------------------
  *  Reusable SVG primitives
@@ -192,9 +193,7 @@ function Nav() {
           <a href="#ai-team" className="nav__link">AI-команда</a>
           <a href="#owners" className="nav__link">Для владельцев</a>
         </div>
-        <a href="/login" className="btn btn--primary btn--nav">
-          Войти <Arrow />
-        </a>
+        <SwipeToEnter />
       </div>
     </nav>
   );
