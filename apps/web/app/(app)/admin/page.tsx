@@ -83,6 +83,18 @@ export default async function AdminHome() {
         >
           Тренажёр →
         </Link>
+        <Link
+          href={'/admin/narrator' as never}
+          className="rounded-lg border bg-white px-5 py-2 font-medium hover:bg-neutral-50"
+        >
+          Утренний разбор →
+        </Link>
+        <Link
+          href={'/admin/analytics' as never}
+          className="rounded-lg border bg-white px-5 py-2 font-medium hover:bg-neutral-50"
+        >
+          Аналитика →
+        </Link>
       </div>
     </div>
   );
