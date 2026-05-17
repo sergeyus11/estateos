@@ -2,6 +2,7 @@ import { db, showReports, users } from '@estateos/db';
 import { eq, gte, and, sql as drizzleSql } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth-server';
 import Link from 'next/link';
+import { LiveClock } from './LiveClock';
 
 export const dynamic = 'force-dynamic';
 
@@ -127,8 +128,8 @@ export default async function AdminHome() {
         </div>
         <div className="kpi" style={{ background: 'linear-gradient(180deg,#FBF8F4,#F2EDE8)' }}>
           <div className="kpi__label">Сейчас</div>
-          <div className="kpi__value" style={{ fontSize: 22 }}>
-            {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })}{' '}
+          <div className="kpi__value" style={{ fontSize: 28 }}>
+            <LiveClock />{' '}
             <span className="kpi__value-suffix">МСК</span>
           </div>
           <div className="kpi__delta" style={{ color: 'var(--ink-3)' }}>

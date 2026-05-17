@@ -545,6 +545,22 @@ img, svg { display: block; max-width: 100%; }
 
 .surface-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
 
+/* Live clock — двоеточие моргает в такт секундам */
+.live-clock {
+  font-feature-settings: "tnum", "lnum";
+  letter-spacing: -0.01em;
+}
+.live-clock__colon {
+  display: inline-block;
+  animation: clock-colon-blink 1s steps(2, end) infinite;
+  padding: 0 1px;
+}
+@keyframes clock-colon-blink {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.18; }
+  100% { opacity: 1; }
+}
+
 /* ============================================================
    MOBILE APP SHELL — iOS-style top bar + bottom tab bar
    Активен на ≤900px (см. media в конце файла)
