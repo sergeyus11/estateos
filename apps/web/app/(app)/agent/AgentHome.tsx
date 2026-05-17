@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { MicRecorder } from './components/MicRecorder';
 import { ReportCard } from './components/ReportCard';
 import { FollowUpDialog } from './components/FollowUpDialog';
@@ -53,39 +54,63 @@ export function AgentHome({ firstName, recent }: { firstName: string | null; rec
       <OnboardingOverlay firstName={firstName} />
 
       {!active && (
-        <div className="space-y-6">
-          <MicRecorder onUpload={startUpload} />
-          <div className="flex items-center justify-between">
+        <div>
+          <div className="page-head">
+            <div>
+              <div className="page-eyebrow">Здравствуйте{firstName ? `, ${firstName}` : ''}</div>
+              <h1 className="page-title">Записать показ</h1>
+              <p className="page-subtitle">Наговорите 1–2 минуты — EstateOS соберёт отчёт сам.</p>
+            </div>
             <PushSubscribeButton />
-            <a href="/agent/training" className="text-xs text-brand-500 underline">
+          </div>
+
+          <div className="surface-card" style={{ padding: 24, marginBottom: 22 }}>
+            <MicRecorder onUpload={startUpload} />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div className="page-eyebrow">Последние показы</div>
+            <Link href={'/agent/training' as never} style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--brand-500)' }}>
               SPIN-тренажёр →
-            </a>
+            </Link>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold">Последние показы</h2>
-            {recent.length === 0 ? (
-              <p className="mt-2 text-neutral-500">
-                Здесь появятся ваши показы. Нажмите кнопку выше, чтобы начать.
-              </p>
-            ) : (
-              <ul className="mt-3 space-y-2">
-                {recent.map((r) => (
-                  <li key={r.id} className="rounded-lg border bg-white p-3 text-sm">
-                    <div className="font-medium">{r.fields?.object || '—'}</div>
-                    <div className="text-neutral-500">
-                      {r.fields?.client || '—'} · {r.fields?.budget || '—'} ·{' '}
-                      {r.status === 'final' ? '✓' : 'черновик'}
+
+          {recent.length === 0 ? (
+            <div className="surface-card" style={{ padding: 24, textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+              Здесь появятся ваши показы. Нажмите кнопку выше, чтобы начать.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {recent.map((r) => {
+                const final = r.status === 'final';
+                return (
+                  <div key={r.id} className="surface-card" style={{ padding: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{r.fields?.object || '— объект —'}</div>
+                      <span
+                        style={{
+                          fontSize: 10, fontFamily: 'var(--mono)', letterSpacing: '0.08em', textTransform: 'uppercase',
+                          padding: '2px 7px', borderRadius: 999,
+                          background: final ? 'rgba(122,158,107,0.15)' : 'var(--bg-soft)',
+                          color: final ? 'var(--success)' : 'var(--ink-3)',
+                        }}
+                      >
+                        {final ? 'финал' : 'черновик'}
+                      </span>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    <div style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+                      {r.fields?.client || '—'} · {r.fields?.budget || '—'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
       {active && active.followUpQuestion && !active.maxReached && (
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <ReportCard reportId={active.id} initialFields={active.fields} />
           <FollowUpDialog
             reportId={active.id}

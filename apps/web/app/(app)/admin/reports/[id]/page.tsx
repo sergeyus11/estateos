@@ -27,60 +27,73 @@ export default async function ReportDetail({
 
   if (!row) notFound();
 
-  return (
-    <div className="space-y-4">
-      <Link href={'/admin/reports' as never} className="text-sm text-neutral-500 hover:underline">
-        ← к ленте
-      </Link>
-      <h1 className="text-2xl font-semibold">{row.r.fields?.object || '— объект —'}</h1>
-      <p className="text-sm text-neutral-500">
-        Агент: {row.a.firstName || row.a.email} · {row.r.createdAt.toLocaleString('ru-RU')}
-      </p>
+  const fields = row.r.fields ?? {};
+  const final = row.r.status === 'final';
 
-      <dl className="grid grid-cols-2 gap-4 rounded-lg border bg-white p-5">
+  return (
+    <div>
+      <div className="page-head">
         <div>
-          <dt className="text-xs uppercase text-neutral-500">Клиент</dt>
-          <dd>{row.r.fields?.client || '—'}</dd>
+          <div className="app__breadcrumb">
+            <Link href={'/admin/reports' as never}>Показы</Link>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6" /></svg>
+            <span>{fields.object || '— объект —'}</span>
+          </div>
+          <h1 className="page-title">{fields.object || '— объект не указан —'}</h1>
+          <p className="page-subtitle">
+            {row.a.firstName || row.a.email} · {row.r.createdAt.toLocaleString('ru-RU')}
+            {' · '}
+            <span style={{ color: final ? 'var(--success)' : 'var(--ink-3)' }}>
+              {final ? '✓ финал' : 'черновик'}
+            </span>
+          </p>
         </div>
-        <div>
-          <dt className="text-xs uppercase text-neutral-500">Бюджет</dt>
-          <dd>{row.r.fields?.budget || '—'}</dd>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 18 }}>
+        <div className="stat-card">
+          <div className="stat-card__label">Клиент</div>
+          <div style={{ fontSize: 16, color: 'var(--ink)', marginTop: 4 }}>{fields.client || '—'}</div>
         </div>
-        <div className="col-span-2">
-          <dt className="text-xs uppercase text-neutral-500">Реакция</dt>
-          <dd>{row.r.fields?.reaction || '—'}</dd>
+        <div className="stat-card">
+          <div className="stat-card__label">Бюджет</div>
+          <div style={{ fontSize: 16, color: 'var(--ink)', marginTop: 4 }}>{fields.budget || '—'}</div>
         </div>
-        <div className="col-span-2">
-          <dt className="text-xs uppercase text-neutral-500">След. шаг</dt>
-          <dd>{row.r.fields?.nextStep || '—'}</dd>
+        <div className="stat-card" style={{ gridColumn: 'span 2' }}>
+          <div className="stat-card__label">Реакция</div>
+          <div style={{ fontSize: 14, color: 'var(--ink-2)', marginTop: 4, lineHeight: 1.5 }}>{fields.reaction || '—'}</div>
         </div>
-      </dl>
+        <div className="stat-card" style={{ gridColumn: 'span 2' }}>
+          <div className="stat-card__label">Следующий шаг</div>
+          <div style={{ fontSize: 14, color: 'var(--ink-2)', marginTop: 4, lineHeight: 1.5 }}>{fields.nextStep || '—'}</div>
+        </div>
+      </div>
+
+      {row.r.voiceUrl && (
+        <div className="surface-card" style={{ marginBottom: 18 }}>
+          <div className="page-eyebrow">Запись</div>
+          <audio src={row.r.voiceUrl} controls style={{ width: '100%', marginTop: 8 }} />
+        </div>
+      )}
 
       {row.r.transcript && (
-        <details className="rounded-lg bg-neutral-50 p-4">
-          <summary className="cursor-pointer text-sm font-medium">Расшифровка</summary>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-700">{row.r.transcript}</p>
+        <details className="surface-card" style={{ marginBottom: 18 }}>
+          <summary style={{ cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>Расшифровка</summary>
+          <p style={{ marginTop: 10, whiteSpace: 'pre-wrap', fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>{row.r.transcript}</p>
         </details>
       )}
 
-      {row.r.voiceUrl && (
-        <div>
-          <p className="text-xs uppercase text-neutral-500">Запись</p>
-          <audio src={row.r.voiceUrl} controls className="mt-1 w-full" />
-        </div>
-      )}
-
       {row.r.rounds && row.r.rounds.length > 0 && (
-        <details className="rounded-lg bg-amber-50 p-4">
-          <summary className="cursor-pointer text-sm font-medium">
+        <details className="surface-card" style={{ background: 'var(--color-amber-50)' }}>
+          <summary style={{ cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--ink)' }}>
             Раунды уточнения ({row.r.rounds.length})
           </summary>
-          <ul className="mt-2 space-y-2 text-sm">
+          <ul style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10, paddingLeft: 0, listStyle: 'none' }}>
             {row.r.rounds.map((rd, i) => (
-              <li key={i}>
-                <strong>Q:</strong> {rd.question || '—'}
+              <li key={i} style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--ink)' }}>Q:</strong> {rd.question || '—'}
                 <br />
-                <strong>A:</strong> {rd.answer || '—'}
+                <strong style={{ color: 'var(--ink)' }}>A:</strong> {rd.answer || '—'}
               </li>
             ))}
           </ul>

@@ -23,7 +23,7 @@ export function NarratorPlayer({ narrativeId, audioSrc }: { narrativeId: string;
       controls
       preload="metadata"
       src={audioSrc}
-      className="w-full"
+      style={{ width: '100%', marginTop: 8 }}
       data-testid="narrator-audio"
     />
   );

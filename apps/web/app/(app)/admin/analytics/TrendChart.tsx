@@ -2,59 +2,66 @@ export type TrendPoint = { label: string; value: number };
 
 export function TrendChart({
   data,
-  height = 80,
+  height = 200,
   title,
+  series2,
 }: {
   data: TrendPoint[];
   height?: number;
-  title: string;
+  title?: string;
+  series2?: TrendPoint[];
 }) {
   if (data.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-4">
-        <h3 className="text-sm font-medium">{title}</h3>
-        <p className="mt-2 text-xs text-neutral-500">нет данных</p>
+      <div style={{ padding: 24, textAlign: 'center', color: 'var(--ink-3)', fontSize: 13 }}>
+        нет данных
       </div>
     );
   }
-  const width = 320;
-  const padX = 16;
-  const padY = 12;
-  const maxV = Math.max(1, ...data.map((d) => d.value));
+
+  const width = 600;
+  const padX = 0;
+  const padY = 10;
+  const maxV = Math.max(1, ...data.map((d) => d.value), ...(series2 ?? []).map((d) => d.value));
   const stepX = (width - 2 * padX) / Math.max(1, data.length - 1);
-  const points = data
-    .map((d, i) => {
-      const x = padX + i * stepX;
-      const y = height - padY - ((height - 2 * padY) * d.value) / maxV;
-      return `${x},${y}`;
-    })
-    .join(' ');
-  const total = data.reduce((s, d) => s + d.value, 0);
+  const toPoints = (pts: TrendPoint[]) =>
+    pts
+      .map((d, i) => {
+        const x = padX + i * stepX;
+        const y = height - padY - ((height - 2 * padY) * d.value) / maxV;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(' ');
+
+  const points1 = toPoints(data);
+  const points2 = series2 ? toPoints(series2) : '';
+  const last = data[data.length - 1];
+  const lastX = padX + (data.length - 1) * stepX;
+  const lastY = height - padY - ((height - 2 * padY) * last.value) / maxV;
+  const fillPath = `M0,${height} L${points1.replace(/ /g, ' L')} L${width},${height} Z`;
+
   return (
-    <div className="rounded-2xl bg-white p-4">
-      <div className="flex items-baseline justify-between">
-        <h3 className="text-sm font-medium">{title}</h3>
-        <span className="text-xs text-neutral-500">всего {total}</span>
-      </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="mt-2 w-full">
-        <polyline
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="text-brand-500"
-          points={points}
-        />
-        {data.map((d, i) => {
-          const x = padX + i * stepX;
-          const y = height - padY - ((height - 2 * padY) * d.value) / maxV;
-          return <circle key={i} cx={x} cy={y} r="3" className="fill-brand-500" />;
-        })}
+    <div>
+      {title && <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 8 }}>{title}</h3>}
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ width: '100%', height }}>
+        <defs>
+          <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#C4836A" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#C4836A" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <g stroke="#EFE8DF" strokeWidth="1">
+          {[0.2, 0.45, 0.7, 0.95].map((f) => (
+            <line key={f} x1="0" y1={f * height} x2={width} y2={f * height} />
+          ))}
+        </g>
+        <path d={fillPath} fill="url(#trend-fill)" />
+        <polyline points={points1} stroke="#C4836A" strokeWidth="2" fill="none" />
+        {series2 && (
+          <polyline points={points2} stroke="#A89E94" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
+        )}
+        <circle cx={lastX} cy={lastY} r="4" fill="#C4836A" stroke="#FAF8F5" strokeWidth="2" />
       </svg>
-      <div className="mt-1 flex justify-between text-[10px] text-neutral-400">
-        <span>{data[0].label}</span>
-        {data.length > 2 && <span>{data[Math.floor(data.length / 2)].label}</span>}
-        <span>{data[data.length - 1].label}</span>
-      </div>
     </div>
   );
 }
