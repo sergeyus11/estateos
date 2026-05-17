@@ -213,7 +213,28 @@ export const narrativeStatus = pgEnum('narrative_status', [
   'error',
 ]);
 
+export type AgentTrend = {
+  name: string;
+  showsYesterday: number;
+  showsWeek: number;
+  showsPriorWeek: number;
+  /** rising = у агента подъём; declining = спад; stable = ровно; off = в отгуле/отпуске */
+  state: 'rising' | 'declining' | 'stable' | 'off';
+  /** human-readable signal: "personal record speed", "3 недели без finalized" */
+  signal?: string;
+};
+
+export type TopRisk = {
+  /** cold_followup = горячий лид вчера без finalized отчёта */
+  type: 'cold_followup' | 'stale_warm' | 'budget_unverified';
+  description: string;
+  /** короткая статистическая ремарка (вес контекста) */
+  statisticalContext?: string;
+  actionDeadline?: string;
+};
+
 export type NarrativeStats = {
+  // legacy baseline — оставляем для back-compat
   showsToday: number;
   showsYesterday: number;
   weekTotal: number;
@@ -221,6 +242,27 @@ export type NarrativeStats = {
   topAgent: { name: string; count: number } | null;
   topObject: string | null;
   hotProspects: Array<{ object: string; client: string; reaction: string }>;
+
+  // Owner Narrative (Phase 2.5) — все optional, заполняются если данных достаточно
+  /** Показов за позавчера — для delta day-over-day */
+  showsPriorDay?: number;
+  /** Показов за прошлую неделю — для week-over-week */
+  weekPriorTotal?: number;
+  /** Средний бюджет показанных вчера объектов (₽). Получен парсингом fields.budget */
+  avgBudget?: number;
+  /** Кол-во отчётов вчера со status='final' */
+  finalReportsYesterday?: number;
+  /** Соотношение горячих/тёплых/разведка по вчерашним reactions */
+  prospectMix?: { hot: number; warm: number; recon: number };
+  /** Per-agent состояние команды */
+  agentTrends?: AgentTrend[];
+  /** Pipeline (proxy из reports за 7 дней) */
+  pipeline7d?: {
+    activeReports: number;
+    finalizedShare: number;
+  };
+  /** Один топ-риск дня для отдельной секции в narrative */
+  topRisk?: TopRisk | null;
 };
 
 export const morningNarratives = pgTable('morning_narratives', {
