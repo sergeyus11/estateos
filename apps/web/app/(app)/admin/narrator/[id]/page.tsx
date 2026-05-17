@@ -35,29 +35,30 @@ export default async function NarratorDetail({ params }: { params: Promise<{ id:
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <div className="app__breadcrumb">
-            <Link href={'/admin/narrator' as never}>Утренний разбор</Link>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6" /></svg>
-            <span>{formatDate(row.periodDate)}</span>
-          </div>
-          <h1 className="page-title">Утро {row.periodDate}</h1>
-          <p className="page-subtitle">Сгенерировано в&nbsp;{generatedLabel} · {row.status === 'ready' ? 'готов' : row.status}</p>
+      <div className="page-head narrator-head">
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <Link href={'/admin/narrator' as never} className="narrator-head__back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Утренний разбор
+          </Link>
+          <h1 className="page-title">Утро {formatDate(row.periodDate)}</h1>
+          <p className="page-subtitle">Сгенерировано {generatedLabel} · {row.status === 'ready' ? 'готов' : row.status}</p>
         </div>
         {row.status === 'ready' && row.audioPath && (
           <a
             href={`/api/admin/narratives/${row.id}/audio`}
             download
-            className="btn btn--ghost"
-            style={{ padding: '8px 14px', fontSize: 13 }}
+            className="narrator-head__download"
+            aria-label="Скачать аудио"
+            title="Скачать аудио"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Скачать аудио
           </a>
         )}
       </div>

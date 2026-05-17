@@ -545,6 +545,146 @@ img, svg { display: block; max-width: 100%; }
 
 .surface-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
 
+/* Narrator detail head — компактный back-link + download icon-button (моб + desktop) */
+.narrator-head { gap: 14px; align-items: flex-start; }
+.narrator-head__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-decoration: none;
+  margin-bottom: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+.narrator-head__back:hover { color: var(--brand-700); }
+.narrator-head__download {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: all 0.18s var(--ease);
+}
+.narrator-head__download:hover {
+  background: var(--brand-50);
+  color: var(--brand-700);
+  border-color: var(--brand-200);
+}
+.narrator-head__download:active { transform: scale(0.94); }
+
+/* Dashboard «Утренний разбор» plate — prominent above KPI grid */
+.morning-plate {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+  background: linear-gradient(135deg, #FBF8F4 0%, #F2EDE8 60%, #EDDFD3 100%);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 8px 24px -12px rgba(154, 96, 72, 0.18);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.morning-plate::before {
+  content: "";
+  position: absolute;
+  top: -50%; right: -10%;
+  width: 50%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(232, 184, 160, 0.45), transparent 65%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+.morning-plate:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 14px 32px -14px rgba(154, 96, 72, 0.25);
+}
+.morning-plate__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #CC8E76, var(--brand-700));
+  color: #FFF8F3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px -4px rgba(154, 96, 72, 0.45);
+  flex-shrink: 0;
+}
+.morning-plate__body { min-width: 0; }
+.morning-plate__eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-700);
+  margin-bottom: 4px;
+}
+.morning-plate__title {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+}
+.morning-plate__meta {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+.morning-plate__cta {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--brand-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px -2px rgba(154, 96, 72, 0.25);
+}
+.morning-plate--empty {
+  background: var(--surface);
+  border-style: dashed;
+}
+.morning-plate--empty .morning-plate__icon { background: var(--brand-50); color: var(--brand-700); box-shadow: none; }
+.morning-plate--empty::before { display: none; }
+
+@media (max-width: 640px) {
+  /* page-head становится column чтобы download не висел сбоку от двух-строчного title */
+  .narrator-head { flex-direction: row; }
+  .narrator-head__download { width: 40px; height: 40px; }
+
+  /* плашка morning разворачивается компактно */
+  .morning-plate {
+    grid-template-columns: 48px 1fr auto;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+  .morning-plate__icon { width: 48px; height: 48px; border-radius: 14px; }
+  .morning-plate__title { font-size: 14px; -webkit-line-clamp: 2; }
+  .morning-plate__cta { width: 36px; height: 36px; }
+}
+
 /* Live clock — двоеточие моргает в такт секундам */
 .live-clock {
   font-feature-settings: "tnum", "lnum";

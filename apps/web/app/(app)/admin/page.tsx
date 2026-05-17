@@ -1,5 +1,5 @@
-import { db, showReports, users } from '@estateos/db';
-import { eq, gte, and, sql as drizzleSql } from 'drizzle-orm';
+import { db, showReports, users, morningNarratives } from '@estateos/db';
+import { eq, gte, and, desc, sql as drizzleSql } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth-server';
 import Link from 'next/link';
 import { LiveClock } from './LiveClock';
@@ -42,6 +42,32 @@ export default async function AdminHome() {
         eq(users.isActive, true)
       )
     );
+
+  // Latest morning narrative для prominent плашки на дашборде
+  const [latestNarrative] = await db
+    .select()
+    .from(morningNarratives)
+    .where(
+      and(
+        eq(morningNarratives.adminId, admin.id),
+        eq(morningNarratives.status, 'ready')
+      )
+    )
+    .orderBy(desc(morningNarratives.createdAt))
+    .limit(1);
+
+  function formatNarrativeDate(d: string): string {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'long' });
+  }
+  function firstSentence(text: string | null, maxChars = 110): string {
+    if (!text) return 'Голосовое саммари за вчера';
+    const trimmed = text.trim().replace(/\n+/g, ' ');
+    if (trimmed.length <= maxChars) return trimmed;
+    const cut = trimmed.slice(0, maxChars);
+    const lastSpace = cut.lastIndexOf(' ');
+    return (lastSpace > 50 ? cut.slice(0, lastSpace) : cut) + '…';
+  }
 
   const tiles: { href: string; label: string; hint: string; icon: React.ReactNode }[] = [
     {
@@ -109,6 +135,61 @@ export default async function AdminHome() {
           <p className="page-subtitle">Картина агентства за сегодня и неделю.</p>
         </div>
       </div>
+
+      {latestNarrative ? (
+        <Link
+          href={`/admin/narrator/${latestNarrative.id}` as never}
+          className="morning-plate"
+          aria-label="Открыть утренний разбор"
+        >
+          <div className="morning-plate__icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+              <path d="M21 19a2 2 0 0 1-2 2h-1v-7h3v5zM3 19a2 2 0 0 0 2 2h1v-7H3v5z" />
+            </svg>
+          </div>
+          <div className="morning-plate__body">
+            <div className="morning-plate__eyebrow">
+              Утренний разбор · {formatNarrativeDate(latestNarrative.periodDate)}
+              {!latestNarrative.listenedAt && <span style={{ marginLeft: 8, color: 'var(--brand-500)' }}>· новый</span>}
+            </div>
+            <div className="morning-plate__title">{firstSentence(latestNarrative.narrativeText)}</div>
+            {latestNarrative.audioDurationSec && (
+              <div className="morning-plate__meta">
+                {Math.floor(latestNarrative.audioDurationSec / 60)}:{String(latestNarrative.audioDurationSec % 60).padStart(2, '0')} аудио · нажмите чтобы послушать
+              </div>
+            )}
+          </div>
+          <div className="morning-plate__cta" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </Link>
+      ) : (
+        <Link
+          href={'/admin/narrator' as never}
+          className="morning-plate morning-plate--empty"
+          aria-label="Утренний разбор"
+        >
+          <div className="morning-plate__icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+              <path d="M21 19a2 2 0 0 1-2 2h-1v-7h3v5zM3 19a2 2 0 0 0 2 2h1v-7H3v5z" />
+            </svg>
+          </div>
+          <div className="morning-plate__body">
+            <div className="morning-plate__eyebrow">Утренний разбор · 9:30 МСК</div>
+            <div className="morning-plate__title">Первый разбор придёт завтра утром</div>
+            <div className="morning-plate__meta">Как только в системе появятся показы — система начнёт ежедневный голосовой разбор</div>
+          </div>
+          <div className="morning-plate__cta" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+        </Link>
+      )}
 
       <section className="dash">
         <div className="kpi">
