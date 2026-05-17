@@ -58,7 +58,8 @@ export default async function AdminHome() {
 
   function formatNarrativeDate(d: string): string {
     const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'long' });
+    // compact на одну строку: «17 мая» (без дня недели)
+    return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   }
   function firstSentence(text: string | null, maxChars = 110): string {
     if (!text) return 'Голосовое саммари за вчера';
@@ -150,8 +151,8 @@ export default async function AdminHome() {
           </div>
           <div className="morning-plate__body">
             <div className="morning-plate__eyebrow">
-              Утренний разбор · {formatNarrativeDate(latestNarrative.periodDate)}
-              {!latestNarrative.listenedAt && <span style={{ marginLeft: 8, color: 'var(--brand-500)' }}>· новый</span>}
+              <span>Утренний разбор · {formatNarrativeDate(latestNarrative.periodDate)}</span>
+              {!latestNarrative.listenedAt && <span className="morning-plate__new">новый</span>}
             </div>
             <div className="morning-plate__title">{firstSentence(latestNarrative.narrativeText)}</div>
             {latestNarrative.audioDurationSec && (
@@ -208,14 +209,16 @@ export default async function AdminHome() {
           <div className="kpi__delta">активных агентов</div>
         </div>
         <div className="kpi kpi--clock" style={{ background: 'linear-gradient(180deg,#FBF8F4,#F2EDE8)' }}>
-          <div className="kpi__label">Сейчас</div>
+          <div className="kpi__head">
+            <span className="kpi__label">Сейчас</span>
+            <MoscowTimeBadge />
+          </div>
           <div className="kpi__value" style={{ fontSize: 28 }}>
             <LiveClock /> <LocalTimezoneLabel />
           </div>
           <div className="kpi__delta" style={{ color: 'var(--ink-3)' }}>
             {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
-          <div className="kpi__msk-corner"><MoscowTimeBadge /></div>
         </div>
       </section>
 

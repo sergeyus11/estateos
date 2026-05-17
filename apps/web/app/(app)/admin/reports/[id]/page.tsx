@@ -32,16 +32,17 @@ export default async function ReportDetail({
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <div className="app__breadcrumb">
-            <Link href={'/admin/reports' as never}>Показы</Link>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6" /></svg>
-            <span>{fields.object || '— объект —'}</span>
-          </div>
-          <h1 className="page-title">{fields.object || '— объект не указан —'}</h1>
+      <div className="page-head narrator-head">
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <Link href={'/admin/reports' as never} className="narrator-head__back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Показы
+          </Link>
+          <h1 className="page-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{fields.object || '— объект не указан —'}</h1>
           <p className="page-subtitle">
-            {row.a.firstName || row.a.email} · {row.r.createdAt.toLocaleString('ru-RU')}
+            {row.a.firstName || row.a.email} · {row.r.createdAt.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
             {' · '}
             <span style={{ color: final ? 'var(--success)' : 'var(--ink-3)' }}>
               {final ? '✓ финал' : 'черновик'}

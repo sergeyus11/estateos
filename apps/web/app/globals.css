@@ -625,12 +625,31 @@ img, svg { display: block; max-width: 100%; }
 }
 .morning-plate__body { min-width: 0; }
 .morning-plate__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--brand-700);
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.morning-plate__eyebrow > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.morning-plate__new {
+  flex-shrink: 0;
+  font-size: 9px;
+  background: var(--brand-500);
+  color: #FFF8F3;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 .morning-plate__title {
   font-size: 16px;
@@ -733,17 +752,27 @@ img, svg { display: block; max-width: 100%; }
   letter-spacing: 0.08em;
 }
 
-/* МСК-badge внутри KPI «Сейчас» — абсолютно в правом верхнем углу плитки */
-.kpi--clock { position: relative; }
-.kpi__msk-corner {
-  position: absolute;
-  top: 14px;
-  right: 16px;
+/* KPI «Сейчас» — head с label слева + МСК badge справа на одной строке */
+.kpi__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.kpi__head .kpi__label {
+  display: inline;
+  min-width: 0;
+}
+.kpi__head .msk-badge {
+  flex-shrink: 0;
 }
 .msk-badge__local-hint {
   margin-left: 4px;
   color: var(--ink-4);
   font-size: 9px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .live-clock__colon {
   display: inline-block;
