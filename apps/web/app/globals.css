@@ -752,20 +752,13 @@ img, svg { display: block; max-width: 100%; }
   letter-spacing: 0.08em;
 }
 
-/* KPI «Сейчас» — head с label слева + МСК badge справа на одной строке */
-.kpi__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  min-width: 0;
-}
-.kpi__head .kpi__label {
-  display: inline;
-  min-width: 0;
-}
-.kpi__head .msk-badge {
-  flex-shrink: 0;
+/* KPI «Сейчас» — local time в центре, МСК-badge в правом нижнем углу */
+.kpi--clock { position: relative; }
+.kpi__msk-corner {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  pointer-events: none;
 }
 .msk-badge__local-hint {
   margin-left: 4px;
@@ -1120,9 +1113,11 @@ img, svg { display: block; max-width: 100%; }
 .kpi__label { font-size: 11px; font-family: var(--mono); letter-spacing: 0.06em; color: var(--ink-3); text-transform: uppercase; }
 .kpi__value { font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-top: 8px; font-feature-settings: "tnum"; }
 .kpi__value-suffix { color: var(--ink-3); font-size: 18px; }
-.kpi__delta { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--success); }
+.kpi__delta { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--success); line-height: 1.2; }
 .kpi__delta--down { color: var(--error); }
-.kpi__spark { position: absolute; bottom: 0; right: 0; width: 80px; height: 38px; opacity: 0.7; }
+.kpi__delta svg { flex-shrink: 0; margin-top: 1px; }
+.kpi__spark { position: absolute; bottom: 6px; right: 6px; width: 80px; height: 38px; opacity: 0.65; pointer-events: none; }
+.kpi__spark polyline { stroke-linejoin: round; stroke-linecap: round; }
 
 .dash-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-top: 16px; }
 @media (max-width: 1100px) { .dash-grid { grid-template-columns: 1fr; } }

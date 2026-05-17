@@ -17,13 +17,15 @@ function lastNDays(n: number): Date[] {
   return days;
 }
 
-function sparkPoints(values: number[], width = 100, height = 38): string {
+function sparkPoints(values: number[], width = 100, height = 38, padX = 4, padY = 6): string {
   if (values.length === 0) return '';
   const max = Math.max(1, ...values);
+  const w = width - 2 * padX;
+  const h = height - 2 * padY;
   return values
     .map((v, i) => {
-      const x = (i / Math.max(1, values.length - 1)) * width;
-      const y = height - (v / max) * height;
+      const x = padX + (i / Math.max(1, values.length - 1)) * w;
+      const y = padY + h - (v / max) * h;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     })
     .join(' ');

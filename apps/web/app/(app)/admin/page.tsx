@@ -209,16 +209,14 @@ export default async function AdminHome() {
           <div className="kpi__delta">активных агентов</div>
         </div>
         <div className="kpi kpi--clock" style={{ background: 'linear-gradient(180deg,#FBF8F4,#F2EDE8)' }}>
-          <div className="kpi__head">
-            <span className="kpi__label">Сейчас</span>
-            <MoscowTimeBadge />
-          </div>
+          <div className="kpi__label">Сейчас</div>
           <div className="kpi__value" style={{ fontSize: 28 }}>
             <LiveClock /> <LocalTimezoneLabel />
           </div>
           <div className="kpi__delta" style={{ color: 'var(--ink-3)' }}>
             {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
+          <div className="kpi__msk-corner"><MoscowTimeBadge /></div>
         </div>
       </section>
 
