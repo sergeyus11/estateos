@@ -15,51 +15,51 @@ const SAMPLES: VoiceSample[] = [
   {
     slug: 'alisa',
     name: 'Алиса',
-    origin: 'Voice Library · native russian',
-    notes: 'Российский native голос из community-библиотеки. Естественная речь, правильные ударения. Кандидат №1 для production.',
-  },
-  {
-    slug: 'charlotte',
-    name: 'Charlotte',
-    origin: 'ElevenLabs default · British female',
-    notes: 'Тёплая, подкаст-стиль. Текущая в проде. Ударения в русском местами мажут.',
+    origin: 'Русский голос · по умолчанию',
+    notes: 'Естественная речь, правильные ударения. Сейчас звучит в утренних разборах.',
     current: true,
   },
   {
+    slug: 'charlotte',
+    name: 'Шарлотта',
+    origin: 'Английский голос с русским',
+    notes: 'Тёплая, подкаст-стиль. Иногда мажет ударения.',
+  },
+  {
     slug: 'lily',
-    name: 'Lily',
-    origin: 'ElevenLabs default · British female mature',
-    notes: 'Velvety actress, лёгкая хрипотца. Дикторский тон.',
+    name: 'Лили',
+    origin: 'Английский голос с русским',
+    notes: 'Бархатный, актёрский тембр. Лёгкая хрипотца.',
   },
   {
     slug: 'alice',
-    name: 'Alice',
-    origin: 'ElevenLabs default · British female educator',
-    notes: 'Чёткая, формальная. News-anchor стиль.',
+    name: 'Элис',
+    origin: 'Английский голос с русским',
+    notes: 'Чёткая, формальная. Тон диктора новостей.',
   },
   {
     slug: 'sarah',
-    name: 'Sarah',
-    origin: 'ElevenLabs default · American female',
-    notes: 'Mature, reassuring, тёплый американский.',
+    name: 'Сара',
+    origin: 'Английский голос с русским',
+    notes: 'Зрелый, спокойный, обнадёживающий американский акцент.',
   },
   {
     slug: 'matilda',
-    name: 'Matilda',
-    origin: 'ElevenLabs default · American female',
-    notes: 'Professional, knowledgable. Хороша для аналитики.',
+    name: 'Матильда',
+    origin: 'Английский голос с русским',
+    notes: 'Профессиональный, знающий. Хорош для аналитики.',
   },
   {
     slug: 'eric',
-    name: 'Eric',
-    origin: 'ElevenLabs default · American male',
-    notes: 'Smooth, trustworthy. Спокойный мужской.',
+    name: 'Эрик',
+    origin: 'Английский голос с русским',
+    notes: 'Мягкий, вызывающий доверие мужской.',
   },
   {
     slug: 'daniel',
-    name: 'Daniel',
-    origin: 'ElevenLabs default · British male',
-    notes: 'Steady broadcaster. BBC-style.',
+    name: 'Дэниел',
+    origin: 'Английский голос с русским',
+    notes: 'Уверенный ведущий, BBC-стиль.',
   },
 ];
 
@@ -79,9 +79,9 @@ export default async function VoicesPage() {
             </svg>
             Дашборд
           </Link>
-          <h1 className="page-title">Выбор голоса для утреннего разбора</h1>
+          <h1 className="page-title">Голос утреннего разбора</h1>
           <p className="page-subtitle">
-            Все примеры — одинаковый текст ~200 знаков, модель eleven_multilingual_v2. Послушай и сравни. Текущий голос в&nbsp;проде отмечен. Когда выберешь — напиши мне «<strong>пробуй {`<имя>`}</strong>» и я переключу production-разбор.
+            Послушай как звучит каждый голос на&nbsp;одинаковом тексте. Понравившийся — попроси поставить, и&nbsp;следующий утренний разбор придёт уже&nbsp;им.
           </p>
         </div>
       </div>
@@ -95,14 +95,14 @@ export default async function VoicesPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {SAMPLES.map((v) => (
-          <div key={v.slug} className="surface-card" style={{ padding: 18, position: 'relative' }}>
+          <div key={v.slug} className="surface-card" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
               <div>
                 <div style={{ fontSize: 17, fontWeight: 500, color: 'var(--ink)' }}>
                   {v.name}
                   {v.current && (
                     <span style={{ marginLeft: 10, fontSize: 10, fontFamily: 'var(--mono)', padding: '2px 8px', borderRadius: 999, background: 'var(--brand-500)', color: '#FFF8F3', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                      сейчас в проде
+                      сейчас звучит
                     </span>
                   )}
                 </div>
@@ -116,9 +116,9 @@ export default async function VoicesPage() {
       </div>
 
       <div className="surface-card" style={{ marginTop: 20, padding: 18, background: 'var(--brand-50)', borderColor: 'var(--brand-200)' }}>
-        <div className="page-eyebrow" style={{ color: 'var(--brand-700)' }}>Как добавить ещё голос</div>
+        <div className="page-eyebrow" style={{ color: 'var(--brand-700)' }}>Хочешь свой голос?</div>
         <p style={{ marginTop: 8, fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.55 }}>
-          Зайди в&nbsp;<a href="https://elevenlabs.io/app/voice-library" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-700)' }}>ElevenLabs Voice Library</a>, найди голос (фильтр Russian → послушай в&nbsp;UI), скопируй его&nbsp;voice ID&nbsp;из URL — пришли мне. Сгенерирую тестовый сэмпл за&nbsp;минуту, потом если зайдёт — поставим production.
+          Утренний разбор может приходить твоим собственным голосом — достаточно одной минуты записи. Скажи команде EstateOS, и&nbsp;настроим. Это включается в&nbsp;старший тариф.
         </p>
       </div>
     </div>

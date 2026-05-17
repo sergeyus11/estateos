@@ -46,6 +46,7 @@ export function AdminShellClient({ user, children }: { user: ProfileUser; childr
           active: t.href === '/admin' ? path === '/admin' : is(t.href),
         })),
         { href: '/admin/training', label: 'Тренажёр', icon: NavIcon.Training, active: is('/admin/training') },
+        { href: '/admin/voices', label: 'Голос разбора', icon: NavIcon.Narrator, active: is('/admin/voices') },
       ],
     },
   ];

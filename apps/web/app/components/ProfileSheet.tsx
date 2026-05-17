@@ -55,6 +55,14 @@ export function ProfileSheet({
         </header>
 
         <nav className="profile-sheet__list">
+          <a href="/admin/voices" className="profile-sheet__item" onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+              <path d="M21 19a2 2 0 0 1-2 2h-1v-7h3v5zM3 19a2 2 0 0 0 2 2h1v-7H3v5z"/>
+            </svg>
+            <span>Голос утреннего разбора</span>
+            <svg className="profile-sheet__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
           <a href="/admin/training" className="profile-sheet__item" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -82,7 +90,7 @@ export function ProfileSheet({
             </svg>
             Выйти из EstateOS
           </a>
-          <div className="profile-sheet__version">EstateOS · phase2.4</div>
+          <div className="profile-sheet__version">EstateOS</div>
         </div>
       </div>
     </div>

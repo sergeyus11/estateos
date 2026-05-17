@@ -27,9 +27,14 @@ export type OpenAITtsModel = 'tts-1' | 'tts-1-hd';
  * Все доступны на любом tier (включая free).
  */
 export const ELEVEN_VOICES = {
+  alisa:     't6lBrEl93uCiLR1Lgm8v', // ★ Native russian, естественные ударения — DEFAULT
   charlotte: 'XB0fDUnXU5powFXDhCwa', // British female, тёплая, подкаст-стиль
   sarah:     'EXAVITQu4vr4xnSDxMAH', // Soft female, energy-driven
   alice:     'Xb7hH8MSUJpSbSDYk0k2', // Professional female, news-anchor
+  lily:      'pFZP5JQG7iQjIQuC4Bku', // British female mature, velvety actress
+  matilda:   'XrExE9yKIg1WjnnlVkGX', // American female, professional
+  eric:      'cjVigY5qzO86Huf0OWal', // American male, smooth, trustworthy
+  daniel:    'onwK4e9ZLuTAKqWW03F9', // British male, broadcaster
   george:    'JBFqnCBsd6RMkjVDRZzb', // Mature male, gravitas
   brian:     'nPczCjzI2devNBz1zQrb', // Deep male, conversational
 } as const;

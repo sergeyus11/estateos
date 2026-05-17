@@ -18,7 +18,7 @@ services:
       retries: 5
 
   web:
-    image: estateos:phase2.5.8
+    image: estateos:phase2.5.9
     container_name: estateos_web
     restart: unless-stopped
     extra_hosts:
@@ -39,7 +39,7 @@ services:
       ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY}
       ELEVENLABS_HTTPS_PROXY: ${ELEVENLABS_HTTPS_PROXY}
       TTS_PROVIDER: ${TTS_PROVIDER:-openai}
-      TTS_ELEVEN_VOICE: ${TTS_ELEVEN_VOICE:-charlotte}
+      TTS_ELEVEN_VOICE: ${TTS_ELEVEN_VOICE:-alisa}
       TTS_ELEVEN_MODEL: ${TTS_ELEVEN_MODEL:-eleven_multilingual_v2}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
