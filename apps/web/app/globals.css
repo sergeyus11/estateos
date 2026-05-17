@@ -552,13 +552,12 @@ img, svg { display: block; max-width: 100%; }
 }
 .live-clock__colon {
   display: inline-block;
-  animation: clock-colon-blink 1s steps(2, end) infinite;
+  animation: clock-colon-blink 1s step-end infinite;
   padding: 0 1px;
 }
 @keyframes clock-colon-blink {
-  0%   { opacity: 1; }
-  50%  { opacity: 0.18; }
-  100% { opacity: 1; }
+  0%, 50%   { visibility: visible; }
+  50.01%, 100% { visibility: hidden; }
 }
 
 /* ============================================================
