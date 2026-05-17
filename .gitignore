@@ -167,3 +167,4 @@ playwright-report/
 
 # pgBackRest config contains cipher pass — never commit
 docker/pgbackrest.conf
+estateos-design-2.zip

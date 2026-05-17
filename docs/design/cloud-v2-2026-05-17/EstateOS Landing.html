@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EstateOS — Операционная система для агентств недвижимости</title>
+<link rel="stylesheet" href="estateos.css" />
+</head>
+<body>
+
+<!-- ===========================================================
+     Reusable SVG definitions
+     =========================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Logo mark: soft rounded square with voice waveform inside -->
+    <symbol id="logo-mark" viewBox="0 0 32 32">
+      <defs>
+        <linearGradient id="lg-fill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%"  stop-color="#D89A82" />
+          <stop offset="55%" stop-color="#C4836A" />
+          <stop offset="100%" stop-color="#9A6048" />
+        </linearGradient>
+        <linearGradient id="lg-hi" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#FFFFFF" stop-opacity="0.45" />
+          <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="32" height="32" rx="9" fill="url(#lg-fill)" />
+      <rect x="0" y="0" width="32" height="32" rx="9" fill="url(#lg-hi)" />
+      <!-- 5 wave bars -->
+      <g fill="#FFFDF9">
+        <rect x="6"  y="13" width="2.6" height="6"  rx="1.3" />
+        <rect x="10.5" y="10" width="2.6" height="12" rx="1.3" />
+        <rect x="15" y="7"  width="2.6" height="18" rx="1.3" />
+        <rect x="19.5" y="11" width="2.6" height="10" rx="1.3" />
+        <rect x="24" y="14" width="2.6" height="4"  rx="1.3" />
+      </g>
+    </symbol>
+
+    <!-- Apple-style hero orb -->
+    <radialGradient id="orb-base" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0%"   stop-color="#F5C9B0" />
+      <stop offset="35%"  stop-color="#DC957A" />
+      <stop offset="68%"  stop-color="#B0704F" />
+      <stop offset="92%"  stop-color="#7E4A2E" />
+      <stop offset="100%" stop-color="#5A3220" />
+    </radialGradient>
+    <radialGradient id="orb-shine" cx="0.3" cy="0.25" r="0.55">
+      <stop offset="0%"  stop-color="#FFFFFF" stop-opacity="0.9" />
+      <stop offset="22%" stop-color="#FFE8D5" stop-opacity="0.5" />
+      <stop offset="55%" stop-color="#FFE8D5" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#FFE8D5" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orb-bottom" cx="0.68" cy="0.78" r="0.5">
+      <stop offset="0%"   stop-color="#FBDCC2" stop-opacity="0.85" />
+      <stop offset="50%"  stop-color="#F8C9A4" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#F8C9A4" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orb-haze" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="55%" stop-color="#C4836A" stop-opacity="0" />
+      <stop offset="78%" stop-color="#D88B6F" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#D88B6F" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+</svg>
+
+<!-- ===========================================================
+     NAV
+     =========================================================== -->
+<nav class="nav" aria-label="Главная навигация">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo" aria-label="EstateOS — на главную">
+      <svg width="26" height="26"><use href="#logo-mark"/></svg>
+      <span class="nav__logo-text">EstateOS</span>
+    </a>
+    <div class="nav__links">
+      <a href="#product" class="nav__link">Продукт</a>
+      <a href="#narrator" class="nav__link">Утренний разбор</a>
+      <a href="#spin" class="nav__link">Тренажёр</a>
+      <a href="#ai-team" class="nav__link">AI-команда</a>
+      <a href="#owners" class="nav__link">Для владельцев</a>
+    </div>
+    <a href="#login" class="btn btn--primary btn--nav">
+      Войти
+      <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ===========================================================
+     HERO
+     =========================================================== -->
+<header class="hero" data-screen-label="Hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <span class="eyebrow">AI-операционная система · агентства недвижимости</span>
+
+        <h1 class="hero__title">
+          Операционная<br />
+          система для<br />
+          <em>агентств&nbsp;недвижимости.</em>
+        </h1>
+
+        <p class="hero__sub">
+          Голос агента превращается в структурированный отчёт.
+          Утренний разбор появляется на вашем iPhone в&nbsp;9:30. Без планёрок,
+          без сводок в&nbsp;ночи, без потерянного контроля.
+        </p>
+
+        <div class="hero__cta">
+          <a href="#login" class="btn btn--primary">
+            Войти в&nbsp;EstateOS
+            <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#product" class="btn btn--ghost">
+            Посмотреть продукт
+          </a>
+        </div>
+
+        <div class="hero__meta">
+          <span class="hero__meta-dot"></span>
+          Работает в&nbsp;продакшене в&nbsp;московском агентстве недвижимости · estateos.ru
+        </div>
+      </div>
+
+      <!-- Apple-style orb + floating chips -->
+      <div class="hero__orb" aria-hidden="true">
+        <div class="orb__glow"></div>
+        <div class="orb__halo"></div>
+
+        <div class="orb">
+          <svg viewBox="-100 -100 800 800" class="orb__inner" preserveAspectRatio="xMidYMid meet">
+            <!-- soft outer haze that fades into the page -->
+            <circle cx="300" cy="300" r="380" fill="url(#orb-haze)" />
+            <!-- main sphere -->
+            <circle cx="300" cy="300" r="240" fill="url(#orb-base)" />
+            <circle cx="300" cy="300" r="240" fill="url(#orb-bottom)" />
+            <circle cx="300" cy="300" r="240" fill="url(#orb-shine)" />
+
+            <!-- soft waveform across the middle -->
+            <g opacity="0.85" fill="#FFFDF9">
+              <rect x="100" y="285" width="6" height="30"  rx="3" />
+              <rect x="120" y="270" width="6" height="60"  rx="3" />
+              <rect x="140" y="245" width="6" height="110" rx="3" />
+              <rect x="160" y="225" width="6" height="150" rx="3" />
+              <rect x="180" y="200" width="6" height="200" rx="3" />
+              <rect x="200" y="215" width="6" height="170" rx="3" />
+              <rect x="220" y="190" width="6" height="220" rx="3" />
+              <rect x="240" y="170" width="6" height="260" rx="3" />
+              <rect x="260" y="195" width="6" height="210" rx="3" />
+              <rect x="280" y="160" width="6" height="280" rx="3" />
+              <rect x="300" y="175" width="6" height="250" rx="3" />
+              <rect x="320" y="200" width="6" height="200" rx="3" />
+              <rect x="340" y="180" width="6" height="240" rx="3" />
+              <rect x="360" y="210" width="6" height="180" rx="3" />
+              <rect x="380" y="230" width="6" height="140" rx="3" />
+              <rect x="400" y="220" width="6" height="160" rx="3" />
+              <rect x="420" y="240" width="6" height="120" rx="3" />
+              <rect x="440" y="255" width="6" height="90"  rx="3" />
+              <rect x="460" y="275" width="6" height="50"  rx="3" />
+              <rect x="480" y="290" width="6" height="20"  rx="3" />
+            </g>
+
+            <!-- top highlight gloss -->
+            <ellipse cx="240" cy="168" rx="140" ry="34" fill="#FFFFFF" opacity="0.13" />
+          </svg>
+        </div>
+
+        <!-- floating UI chips -->
+        <div class="hero__chip hero__chip--1">
+          <span class="hero__chip-dot hero__chip-dot--success"></span>
+          <span class="hero__chip-text">Запись агента · 04:12</span>
+          <span class="hero__chip-time">сейчас</span>
+        </div>
+        <div class="hero__chip hero__chip--2">
+          <span class="hero__chip-dot"></span>
+          <span class="hero__chip-text">Утренний разбор готов</span>
+          <span class="hero__chip-time">9:30</span>
+        </div>
+        <div class="hero__chip hero__chip--3">
+          <span class="hero__chip-dot hero__chip-dot--warn"></span>
+          <span class="hero__chip-text">5 показов · 2 follow-up</span>
+          <span class="hero__chip-time">сегодня</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- trust strip -->
+    <div class="trust">
+      <div>
+        <div class="trust__item-num"><em>09:30</em></div>
+        <div class="trust__item-label">Утренний разбор каждый день, без напоминаний</div>
+      </div>
+      <div>
+        <div class="trust__item-num">5 <span style="font-size:18px;color:var(--ink-3)">полей</span></div>
+        <div class="trust__item-label">Структурированный отчёт из голоса агента</div>
+      </div>
+      <div>
+        <div class="trust__item-num">30 <span style="font-size:18px;color:var(--ink-3)">дней</span></div>
+        <div class="trust__item-label">Аналитика и&nbsp;trend-графики из&nbsp;коробки</div>
+      </div>
+      <div>
+        <div class="trust__item-num">8 <span style="font-size:18px;color:var(--ink-3)">типажей</span></div>
+        <div class="trust__item-label">SPIN-тренажёр продаж для&nbsp;команды</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ===========================================================
+     NUMBERED FEATURES
+     =========================================================== -->
+<section class="section" id="product" data-screen-label="Возможности">
+  <div class="container">
+    <div class="features-head">
+      <div>
+        <span class="section-label">— Возможности</span>
+      </div>
+      <div>
+        <h2>Три ритуала, на&nbsp;которых держится&nbsp;агентство.</h2>
+        <p class="lead" style="margin-top:24px">
+          EstateOS не&nbsp;добавляет работу. Он&nbsp;собирает то, что
+          и&nbsp;так уже происходит в&nbsp;агентстве — голос, цифры,
+          разговор&nbsp;— и&nbsp;возвращает в&nbsp;виде ясной картины.
+        </p>
+      </div>
+    </div>
+
+    <div class="features">
+      <!-- 01 Voice -->
+      <article class="feature-card">
+        <div class="feature-card__num">01 · Голос агента</div>
+        <h3 class="feature-card__title">Агент диктует.<br/>Отчёт пишется сам.</h3>
+        <p class="feature-card__desc">
+          После показа квартиры агент наговаривает 1–2 минуты. EstateOS превращает речь
+          в&nbsp;5&nbsp;структурированных полей и&nbsp;follow-up вопрос — автоматически.
+        </p>
+        <div class="feature-card__visual">
+          <svg width="100%" height="80" viewBox="0 0 280 80" preserveAspectRatio="none">
+            <g fill="#C4836A">
+              <rect x="0"   y="30" width="6" height="20" rx="3"/>
+              <rect x="12"  y="22" width="6" height="36" rx="3"/>
+              <rect x="24"  y="14" width="6" height="52" rx="3"/>
+              <rect x="36"  y="8"  width="6" height="64" rx="3"/>
+              <rect x="48"  y="16" width="6" height="48" rx="3"/>
+              <rect x="60"  y="4"  width="6" height="72" rx="3"/>
+              <rect x="72"  y="12" width="6" height="56" rx="3"/>
+              <rect x="84"  y="20" width="6" height="40" rx="3"/>
+              <rect x="96"  y="10" width="6" height="60" rx="3"/>
+              <rect x="108" y="22" width="6" height="36" rx="3"/>
+              <rect x="120" y="6"  width="6" height="68" rx="3"/>
+              <rect x="132" y="18" width="6" height="44" rx="3"/>
+              <rect x="144" y="14" width="6" height="52" rx="3"/>
+            </g>
+            <g fill="#E0D6CC">
+              <rect x="156" y="26" width="6" height="28" rx="3"/>
+              <rect x="168" y="32" width="6" height="16" rx="3"/>
+              <rect x="180" y="30" width="6" height="20" rx="3"/>
+              <rect x="192" y="34" width="6" height="12" rx="3"/>
+              <rect x="204" y="32" width="6" height="16" rx="3"/>
+              <rect x="216" y="36" width="6" height="8"  rx="3"/>
+              <rect x="228" y="34" width="6" height="12" rx="3"/>
+              <rect x="240" y="36" width="6" height="8"  rx="3"/>
+              <rect x="252" y="37" width="6" height="6"  rx="3"/>
+              <rect x="264" y="38" width="6" height="4"  rx="3"/>
+            </g>
+          </svg>
+        </div>
+      </article>
+
+      <!-- 02 Morning briefing -->
+      <article class="feature-card">
+        <div class="feature-card__num">02 · Утренний разбор</div>
+        <h3 class="feature-card__title">9:30. Каждое утро.<br/>На&nbsp;вашем iPhone.</h3>
+        <p class="feature-card__desc">
+          Голосовое саммари за&nbsp;вчера: показы, follow-up, узкие места.
+          5&nbsp;минут — и&nbsp;агентство в&nbsp;голове, до&nbsp;первой чашки кофе.
+        </p>
+        <div class="feature-card__visual">
+          <div style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:220px;">
+            <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink-3);">
+              <span>17.05.2026 · вторник</span><span>04:38</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:2px;height:42px;">
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:60%"></span>
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:90%"></span>
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:70%"></span>
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:100%"></span>
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:80%"></span>
+              <span style="flex:1;background:var(--brand-500);border-radius:2px;height:55%"></span>
+              <span style="flex:1;background:var(--brand-300);border-radius:2px;height:70%"></span>
+              <span style="flex:1;background:var(--ink-4);border-radius:2px;height:40%"></span>
+              <span style="flex:1;background:var(--ink-4);border-radius:2px;height:60%"></span>
+              <span style="flex:1;background:var(--ink-4);border-radius:2px;height:30%"></span>
+              <span style="flex:1;background:var(--ink-4);border-radius:2px;height:50%"></span>
+              <span style="flex:1;background:var(--ink-4);border-radius:2px;height:35%"></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,#CC8E76,#9A6048);display:flex;align-items:center;justify-content:center">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FFF8F3"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span style="font-family:var(--mono);font-size:11px;color:var(--ink-2)">02:14 / 04:38</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 SPIN trainer -->
+      <article class="feature-card">
+        <div class="feature-card__num">03 · SPIN-тренажёр</div>
+        <h3 class="feature-card__title">8 типажей клиентов.<br/>Тренировка без потерь.</h3>
+        <p class="feature-card__desc">
+          Агент тренирует разговор с&nbsp;«ипотечником», «инвестором»,
+          «семьёй с&nbsp;двумя детьми». Без&nbsp;живых клиентов и&nbsp;без&nbsp;цены ошибки.
+        </p>
+        <div class="feature-card__visual">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%">
+            <div style="aspect-ratio:1;border-radius:10px;background:linear-gradient(135deg,#E2A98E,#9A6048);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:13px;letter-spacing:-0.02em">И</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:linear-gradient(135deg,#D4A84C,#9A7833);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:13px;letter-spacing:-0.02em">С</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:linear-gradient(135deg,#7A9E6B,#52784A);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:13px;letter-spacing:-0.02em">М</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:linear-gradient(135deg,#6B8EC4,#3E5A8C);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:13px;letter-spacing:-0.02em">К</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-weight:600;font-size:13px">Б</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-weight:600;font-size:13px">П</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-weight:600;font-size:13px">Н</div>
+            <div style="aspect-ratio:1;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-weight:600;font-size:13px;font-family:var(--mono)">+4</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     NARRATOR DETAIL — product showcase #1
+     =========================================================== -->
+<section class="section section--tight showcase" id="narrator" data-screen-label="Утренний разбор">
+  <div class="container">
+    <div class="showcase__head">
+      <span class="eyebrow">Утренний разбор · 9:30 МСК</span>
+      <h2>Голос продолжает играть<br/>когда вы выходите из&nbsp;спальни.</h2>
+      <p class="lead">
+        В&nbsp;9:30 на&nbsp;iPhone владельца появляется аудиофайл за&nbsp;вчерашний день.
+        Под ним — расшифровка, ключевые цифры, и&nbsp;вопросы, которые сегодня
+        стоит задать команде.
+      </p>
+    </div>
+
+    <!-- Mobile-only iPhone preview -->
+    <div class="phone-stage">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__screen">
+          <div class="phone__status">
+            <span class="phone__status-time">9:30</span>
+            <span class="phone__status-icons">
+              <svg width="14" height="10" viewBox="0 0 18 12" fill="currentColor"><rect x="0"  y="7" width="3" height="5" rx="0.6"/><rect x="4"  y="4.5" width="3" height="7.5" rx="0.6"/><rect x="8"  y="2" width="3" height="10" rx="0.6"/><rect x="12" y="0" width="3" height="12" rx="0.6"/></svg>
+              <svg width="14" height="10" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 5 Q8 -1 15 5"/><path d="M3 7 Q8 3 13 7"/><circle cx="8" cy="9.5" r="1" fill="currentColor"/></svg>
+              <svg width="22" height="10" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="1.5" width="21" height="9" rx="2.4"/><rect x="2.5" y="3.5" width="15" height="5" rx="1" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx="0.5" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="phone__top">
+            <div class="phone__back">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <div>
+              <div class="phone__top-title">Утренний разбор</div>
+              <div class="phone__top-h">17 мая · вторник</div>
+            </div>
+          </div>
+
+          <div class="phone__card" style="background:linear-gradient(180deg,#FBF8F4,#F2EDE8)">
+            <div class="phone__card-label">УТРО · 04:38</div>
+            <div class="phone__card-title">«Вчера было 5&nbsp;показов. Один&nbsp;— горячий.»</div>
+            <div class="phone__wave">
+              <span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="phone__controls">
+              <button class="phone__ctrl" aria-label="Назад 15с">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+              </button>
+              <button class="phone__ctrl phone__ctrl--play" aria-label="Пауза">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFF8F3"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+              </button>
+              <button class="phone__ctrl" aria-label="Вперёд 15с">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+              </button>
+            </div>
+            <div class="phone__time">
+              <span>02:14</span><span>04:38</span>
+            </div>
+          </div>
+
+          <div class="phone__row">
+            <div class="phone__mini">
+              <div class="phone__mini-label">Показов</div>
+              <div class="phone__mini-value">5</div>
+              <div class="phone__mini-delta">↑ +1 к&nbsp;ср.</div>
+            </div>
+            <div class="phone__mini">
+              <div class="phone__mini-label">Follow-up</div>
+              <div class="phone__mini-value">3<span style="font-size:13px;color:var(--ink-3)">/5</span></div>
+              <div class="phone__mini-delta" style="color:var(--error)">· Один не закрыт</div>
+            </div>
+          </div>
+
+          <div class="phone__home"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="window desktop-only">
+      <div class="window__bar">
+        <span class="window__dot window__dot--r"></span>
+        <span class="window__dot window__dot--y"></span>
+        <span class="window__dot window__dot--g"></span>
+        <span class="window__url">estateos.ru&nbsp;/&nbsp;admin&nbsp;/&nbsp;narrator&nbsp;/&nbsp;17-05-2026</span>
+      </div>
+
+      <div class="app">
+        <!-- sidebar -->
+        <aside class="app__side">
+          <div class="app__brand">
+            <svg width="26" height="26"><use href="#logo-mark"/></svg>
+            <span class="app__brand-text">EstateOS</span>
+          </div>
+
+          <div class="app__nav-label">Управление</div>
+          <div class="app__nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Дашборд
+          </div>
+          <div class="app__nav-item app__nav-item--active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-7h3v5zM3 19a2 2 0 0 0 2 2h1v-7H3v5z"/></svg>
+            Утренний разбор
+            <span class="app__nav-badge">NEW</span>
+          </div>
+          <div class="app__nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Аналитика
+          </div>
+          <div class="app__nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Агенты
+          </div>
+          <div class="app__nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Тренажёр
+          </div>
+
+          <div class="app__nav-label">Аккаунт</div>
+          <div class="app__nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Настройки
+          </div>
+        </aside>
+
+        <!-- main -->
+        <div class="app__main">
+          <div class="app__head">
+            <div>
+              <div class="app__breadcrumb">
+                <a href="#">Утренний разбор</a>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+                <span>17 мая · вторник</span>
+              </div>
+              <div class="app__title">Утро 17.05.2026</div>
+              <div class="app__subtitle">Сгенерировано в&nbsp;9:28 МСК · длительность 4&nbsp;мин 38&nbsp;сек</div>
+            </div>
+            <a href="#" class="btn btn--ghost" style="padding:8px 14px;font-size:13px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Скачать аудио
+            </a>
+          </div>
+
+          <div class="narrator">
+            <div>
+              <!-- player -->
+              <div class="player">
+                <div class="player__head">
+                  <div>
+                    <div class="player__date">УТРО · ВТОРНИК</div>
+                    <div class="player__title">«Вчера было 5 показов. Один — горячий.»</div>
+                  </div>
+                </div>
+                <div class="player__wave">
+                  <span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span class="past"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="player__controls">
+                  <button class="player__btn" aria-label="Назад 15 сек">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+                  </button>
+                  <button class="player__btn player__btn--play" aria-label="Пауза">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#FFF8F3"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                  </button>
+                  <button class="player__btn" aria-label="Вперёд 15 сек">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+                  </button>
+                  <div class="player__time"><em>02:14</em> / 04:38</div>
+                </div>
+              </div>
+
+              <!-- transcript -->
+              <div class="transcript" style="margin-top:16px">
+                <div class="transcript__head">
+                  <span class="transcript__label">Расшифровка</span>
+                  <span class="transcript__label" style="color:var(--brand-500)">5 ключевых моментов</span>
+                </div>
+                <div class="transcript__line">
+                  <span class="transcript__time">00:18</span>
+                  <span class="transcript__text">Доброе утро. Вчера команда провела <mark>5&nbsp;показов</mark>, из&nbsp;них один — на&nbsp;Лефортовском, — оценил клиент как «то&nbsp;самое».</span>
+                </div>
+                <div class="transcript__line">
+                  <span class="transcript__time">00:42</span>
+                  <span class="transcript__text">Виктор задавал хорошие SPIN-вопросы, но&nbsp;<mark>не&nbsp;закрыл follow-up</mark> — клиент уехал думать, без&nbsp;даты следующего контакта.</span>
+                </div>
+                <div class="transcript__line">
+                  <span class="transcript__time">01:24</span>
+                  <span class="transcript__text">Аня провела два показа в&nbsp;Митино. Оба отчёта пришли через 15&nbsp;минут после показа — это лучшая скорость на&nbsp;неделе.</span>
+                </div>
+                <div class="transcript__line">
+                  <span class="transcript__time">02:08</span>
+                  <span class="transcript__text">Внимание: <mark>«ипотечник»</mark> в&nbsp;Кузьминках. Бюджет не&nbsp;подтверждён. Рекомендую сегодня закрыть вопрос финансирования до&nbsp;показа.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- right column stats -->
+            <div class="narrator__stats">
+              <div class="stat-card">
+                <div class="stat-card__label">Вчера · показов</div>
+                <div class="stat-card__value">5 <em>+1 к&nbsp;ср.</em></div>
+                <div class="stat-card__bars">
+                  <span style="height:30%"></span>
+                  <span style="height:55%"></span>
+                  <span style="height:40%"></span>
+                  <span style="height:70%"></span>
+                  <span style="height:50%"></span>
+                  <span style="height:65%" class="hi"></span>
+                  <span style="height:60%"></span>
+                  <span style="height:45%"></span>
+                  <span style="height:75%"></span>
+                  <span style="height:55%"></span>
+                  <span style="height:80%" class="hi"></span>
+                  <span style="height:60%"></span>
+                  <span style="height:70%"></span>
+                  <span style="height:90%" class="hi"></span>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card__label">Закрытие follow-up</div>
+                <div class="stat-card__value">3 / 5</div>
+                <div class="stat-card__list">
+                  <div class="stat-card__row"><span>Виктор</span><em style="color:var(--error)">не&nbsp;закрыт</em></div>
+                  <div class="stat-card__row"><span>Аня</span><em>+2</em></div>
+                  <div class="stat-card__row"><span>Дмитрий</span><em>+1</em></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card__label">Горячие сделки</div>
+                <div class="stat-card__value" style="color:var(--brand-500)">1</div>
+                <div class="stat-card__list">
+                  <div class="stat-card__row"><span>Лефортово · 2-к</span><em>92%</em></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     DASHBOARD — product showcase #2
+     =========================================================== -->
+<section class="section section--tight" data-screen-label="Дашборд">
+  <div class="container">
+    <div class="showcase__head">
+      <span class="eyebrow">Дашборд · 30 дней</span>
+      <h2>Контроль агентства<br/>в&nbsp;одном экране.</h2>
+      <p class="lead">
+        Никаких таблиц на&nbsp;100 строк. Только то, что вам нужно знать
+        в&nbsp;первые 30&nbsp;секунд&nbsp;дня.
+      </p>
+    </div>
+
+    <!-- Mobile-only iPhone dashboard preview -->
+    <div class="phone-stage">
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__screen">
+          <div class="phone__status">
+            <span class="phone__status-time">9:32</span>
+            <span class="phone__status-icons">
+              <svg width="14" height="10" viewBox="0 0 18 12" fill="currentColor"><rect x="0"  y="7" width="3" height="5" rx="0.6"/><rect x="4"  y="4.5" width="3" height="7.5" rx="0.6"/><rect x="8"  y="2" width="3" height="10" rx="0.6"/><rect x="12" y="0" width="3" height="12" rx="0.6"/></svg>
+              <svg width="14" height="10" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 5 Q8 -1 15 5"/><path d="M3 7 Q8 3 13 7"/><circle cx="8" cy="9.5" r="1" fill="currentColor"/></svg>
+              <svg width="22" height="10" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="1.5" width="21" height="9" rx="2.4"/><rect x="2.5" y="3.5" width="15" height="5" rx="1" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx="0.5" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <div class="phone__top">
+            <div class="phone__back" style="background:linear-gradient(180deg,#CC8E76,#9A6048);border:0">
+              <svg width="14" height="14" viewBox="0 0 32 32"><use href="#logo-mark"/></svg>
+            </div>
+            <div>
+              <div class="phone__top-title">Дашборд · 30 дней</div>
+              <div class="phone__top-h">Доброе утро</div>
+            </div>
+          </div>
+
+          <div class="phone__kpi">
+            <div class="phone__kpi-row">
+              <div class="phone__kpi-item">
+                <div class="phone__mini-label">Показов</div>
+                <div class="phone__mini-value">142</div>
+                <div class="phone__mini-delta">↑ +18%</div>
+              </div>
+              <div class="phone__kpi-item">
+                <div class="phone__mini-label">Follow-up</div>
+                <div class="phone__mini-value">87<span style="font-size:13px;color:var(--ink-3)">%</span></div>
+                <div class="phone__mini-delta">↑ +6 пп</div>
+              </div>
+              <div class="phone__kpi-item">
+                <div class="phone__mini-label">Скорость</div>
+                <div class="phone__mini-value">14<span style="font-size:13px;color:var(--ink-3)">м</span></div>
+                <div class="phone__mini-delta">↓ − 4м</div>
+              </div>
+              <div class="phone__kpi-item">
+                <div class="phone__mini-label">SPIN</div>
+                <div class="phone__mini-value">38</div>
+                <div class="phone__mini-delta">↑ +12</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="phone__card">
+            <div class="phone__card-label">ПОКАЗЫ · 30Д</div>
+            <svg class="phone__chart" viewBox="0 0 220 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="ph-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="#C4836A" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#C4836A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,52 L20,48 L40,42 L60,44 L80,36 L100,30 L120,34 L140,24 L160,20 L180,14 L200,18 L220,8 L220,70 L0,70 Z" fill="url(#ph-fill)"/>
+              <polyline points="0,52 20,48 40,42 60,44 80,36 100,30 120,34 140,24 160,20 180,14 200,18 220,8" stroke="#C4836A" stroke-width="1.6" fill="none"/>
+              <circle cx="220" cy="8" r="3" fill="#C4836A" stroke="#FAF8F5" stroke-width="1.5"/>
+            </svg>
+          </div>
+
+          <div class="phone__card" style="padding:14px 16px">
+            <div class="phone__card-label" style="margin-bottom:8px">ТОП АГЕНТОВ</div>
+            <div class="phone__list-row">
+              <div class="agent-avatar">АП</div>
+              <span>Аня Петрова</span>
+              <em>94</em>
+            </div>
+            <div class="phone__list-row">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#D4A84C,#9A7833)">ДК</div>
+              <span>Дмитрий К.</span>
+              <em>88</em>
+            </div>
+            <div class="phone__list-row">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#7A9E6B,#52784A)">ВЛ</div>
+              <span>Виктор Л.</span>
+              <em>82</em>
+            </div>
+          </div>
+
+          <div class="phone__home"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="window desktop-only">
+      <div class="window__bar">
+        <span class="window__dot window__dot--r"></span>
+        <span class="window__dot window__dot--y"></span>
+        <span class="window__dot window__dot--g"></span>
+        <span class="window__url">estateos.ru&nbsp;/&nbsp;admin&nbsp;/&nbsp;analytics</span>
+      </div>
+
+      <div style="padding:28px 32px 36px;background:var(--bg)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <div>
+            <div style="font-size:13px;color:var(--ink-3);font-family:var(--mono)">17.05.2026 · 09:32 МСК</div>
+            <div style="font-size:24px;font-weight:500;letter-spacing:-0.02em;margin-top:4px">Доброе утро. Вот ваше агентство.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn--ghost" style="padding:8px 14px;font-size:13px">7 дней</button>
+            <button class="btn" style="padding:8px 14px;font-size:13px;background:var(--ink);color:var(--surface)">30 дней</button>
+            <button class="btn btn--ghost" style="padding:8px 14px;font-size:13px">Квартал</button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="dash">
+          <div class="kpi">
+            <div class="kpi__label">Показов · 30д</div>
+            <div class="kpi__value">142</div>
+            <div class="kpi__delta">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 15 12 9 18 15"/></svg>
+              +18% к&nbsp;апр
+            </div>
+            <svg class="kpi__spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+              <polyline points="0,30 12,28 24,22 36,24 48,18 60,12 72,16 84,8 100,12" stroke="#7A9E6B" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Follow-up · закрыто</div>
+            <div class="kpi__value">87<span style="color:var(--ink-3);font-size:18px">%</span></div>
+            <div class="kpi__delta">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 15 12 9 18 15"/></svg>
+              +6 пп
+            </div>
+            <svg class="kpi__spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+              <polyline points="0,24 12,26 24,20 36,18 48,14 60,16 72,10 84,12 100,6" stroke="#C4836A" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Скорость отчёта</div>
+            <div class="kpi__value">14<span style="color:var(--ink-3);font-size:18px">м</span></div>
+            <div class="kpi__delta kpi__delta--down">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+              −4&nbsp;м (быстрее)
+            </div>
+            <svg class="kpi__spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+              <polyline points="0,12 12,18 24,16 36,22 48,20 60,24 72,28 84,26 100,30" stroke="#7A9E6B" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">SPIN-тренировок</div>
+            <div class="kpi__value">38</div>
+            <div class="kpi__delta">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 15 12 9 18 15"/></svg>
+              +12
+            </div>
+            <svg class="kpi__spark" viewBox="0 0 100 40" preserveAspectRatio="none">
+              <polyline points="0,32 12,28 24,30 36,26 48,20 60,22 72,16 84,14 100,8" stroke="#C4836A" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <!-- chart -->
+          <div class="chart">
+            <div class="chart__head">
+              <div class="chart__title">Показы и&nbsp;follow-up · 30 дней</div>
+              <div class="chart__legend">
+                <span class="chart__legend-item">Показы</span>
+                <span class="chart__legend-item chart__legend-item--alt">Follow-up</span>
+              </div>
+            </div>
+            <svg class="chart__svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stop-color="#C4836A" stop-opacity="0.28"/>
+                  <stop offset="100%" stop-color="#C4836A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- grid -->
+              <g stroke="#EFE8DF" stroke-width="1">
+                <line x1="0" y1="40"  x2="600" y2="40"/>
+                <line x1="0" y1="90"  x2="600" y2="90"/>
+                <line x1="0" y1="140" x2="600" y2="140"/>
+                <line x1="0" y1="190" x2="600" y2="190"/>
+              </g>
+              <!-- area -->
+              <path d="M0,160 L20,150 L40,140 L60,135 L80,125 L100,128 L120,115 L140,118 L160,105 L180,98 L200,108 L220,90 L240,82 L260,88 L280,74 L300,68 L320,72 L340,58 L360,62 L380,48 L400,52 L420,40 L440,44 L460,34 L480,38 L500,28 L520,32 L540,22 L560,18 L580,24 L600,12 L600,200 L0,200 Z" fill="url(#chart-fill)"/>
+              <!-- main line -->
+              <polyline points="0,160 20,150 40,140 60,135 80,125 100,128 120,115 140,118 160,105 180,98 200,108 220,90 240,82 260,88 280,74 300,68 320,72 340,58 360,62 380,48 400,52 420,40 440,44 460,34 480,38 500,28 520,32 540,22 560,18 580,24 600,12" stroke="#C4836A" stroke-width="2" fill="none"/>
+              <!-- secondary line -->
+              <polyline points="0,178 20,172 40,168 60,162 80,160 100,155 120,150 140,148 160,140 180,138 200,132 220,128 240,120 260,118 280,112 300,108 320,100 340,98 360,92 380,88 400,82 420,80 440,72 460,70 480,64 500,62 520,58 540,52 560,48 580,46 600,40" stroke="#A89E94" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/>
+              <!-- last point -->
+              <circle cx="600" cy="12" r="4" fill="#C4836A" stroke="#FAF8F5" stroke-width="2"/>
+            </svg>
+          </div>
+
+          <!-- agents list -->
+          <div class="agents-list">
+            <div class="agents-list__head">
+              <div class="agents-list__title">Топ агентов · 30 дней</div>
+              <a href="#" class="agents-list__more">все →</a>
+            </div>
+            <div class="agent-row">
+              <div class="agent-avatar">АП</div>
+              <div>
+                <div class="agent-row__name">Аня Петрова</div>
+                <div class="agent-row__role">Senior · Митино</div>
+              </div>
+              <div class="agent-row__score">94</div>
+              <div class="agent-row__trend">↑ 8</div>
+            </div>
+            <div class="agent-row">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#D4A84C,#9A7833)">ДК</div>
+              <div>
+                <div class="agent-row__name">Дмитрий Кравцов</div>
+                <div class="agent-row__role">Middle · Центр</div>
+              </div>
+              <div class="agent-row__score">88</div>
+              <div class="agent-row__trend">↑ 3</div>
+            </div>
+            <div class="agent-row">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#7A9E6B,#52784A)">ВЛ</div>
+              <div>
+                <div class="agent-row__name">Виктор Лебедев</div>
+                <div class="agent-row__role">Middle · Лефортово</div>
+              </div>
+              <div class="agent-row__score">82</div>
+              <div class="agent-row__trend" style="color:var(--error)">↓ 4</div>
+            </div>
+            <div class="agent-row">
+              <div class="agent-avatar" style="background:linear-gradient(135deg,#6B8EC4,#3E5A8C)">МР</div>
+              <div>
+                <div class="agent-row__name">Мария Романова</div>
+                <div class="agent-row__role">Junior · ЮВАО</div>
+              </div>
+              <div class="agent-row__score">76</div>
+              <div class="agent-row__trend">↑ 12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     SPIN TRAINER section
+     =========================================================== -->
+<section class="section" id="spin" data-screen-label="SPIN-тренажёр">
+  <div class="container">
+    <div class="spin">
+      <div class="spin__head">
+        <div>
+          <span class="eyebrow">SPIN · Тренажёр продаж</span>
+          <h2 style="margin-top:24px">Каждый клиент<br/>уже жил у&nbsp;нас в&nbsp;голове.</h2>
+        </div>
+        <div>
+          <p class="lead" style="max-width:none">
+            Восемь типажей покупателя — от&nbsp;тревожного ипотечника
+            до&nbsp;циничного инвестора. Агент тренируется с&nbsp;ними
+            по&nbsp;методике SPIN, без&nbsp;цены ошибки, до&nbsp;того
+            как встретит&nbsp;их вживую.
+          </p>
+        </div>
+      </div>
+
+      <div class="archetypes">
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#E2A98E,#9A6048)">И</div>
+          <h3 class="archetype__name">Ипотечник</h3>
+          <p class="archetype__quote">«А&nbsp;если ставка вырастет ещё на&nbsp;два пункта&nbsp;— я&nbsp;не&nbsp;потяну.»</p>
+          <span class="archetype__tag">тревога · бюджет</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#D4A84C,#9A7833)">С</div>
+          <h3 class="archetype__name">Семья 2&nbsp;детей</h3>
+          <p class="archetype__quote">«Школа должна быть в&nbsp;пешей доступности, и&nbsp;окна&nbsp;— не&nbsp;на&nbsp;трассу.»</p>
+          <span class="archetype__tag">эмоции · инфраструктура</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#7A9E6B,#52784A)">И</div>
+          <h3 class="archetype__name">Инвестор</h3>
+          <p class="archetype__quote">«Покажите цифры по&nbsp;аренде за&nbsp;последние три&nbsp;квартала.»</p>
+          <span class="archetype__tag">данные · ROI</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#6B8EC4,#3E5A8C)">К</div>
+          <h3 class="archetype__name">Коллекционер</h3>
+          <p class="archetype__quote">«Меня интересует только Сталинка, и&nbsp;желательно с&nbsp;историей.»</p>
+          <span class="archetype__tag">статус · вкус</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#B891C4,#6A4A8C)">Б</div>
+          <h3 class="archetype__name">Беженец из&nbsp;аренды</h3>
+          <p class="archetype__quote">«Надоело платить чужой ипотечник. Давайте быстро.»</p>
+          <span class="archetype__tag">срочность</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#C49A6B,#7A4A2E)">П</div>
+          <h3 class="archetype__name">Пенсионер</h3>
+          <p class="archetype__quote">«Я&nbsp;уже один раз обжёгся. Хочу всё чётко по&nbsp;документам.»</p>
+          <span class="archetype__tag">доверие · бумаги</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#6BC4B8,#2E7A6E)">Н</div>
+          <h3 class="archetype__name">Новосёл</h3>
+          <p class="archetype__quote">«Первая квартира. Не&nbsp;понимаю, что вообще спрашивать.»</p>
+          <span class="archetype__tag">обучение</span>
+        </article>
+        <article class="archetype">
+          <div class="archetype__avatar" style="background:linear-gradient(135deg,#C46B82,#7A2E48)">Р</div>
+          <h3 class="archetype__name">Разменщик</h3>
+          <p class="archetype__quote">«Сначала продать свою, потом думать о&nbsp;вашей.»</p>
+          <span class="archetype__tag">альтернатива</span>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     AI TEAM / VOICE AGENTS (roadmap)
+     =========================================================== -->
+<section class="section team" id="ai-team" data-screen-label="AI-команда">
+  <div class="container">
+    <div class="team__head">
+      <div>
+        <span class="section-label">— AI-команда · roadmap</span>
+        <h2 class="team__intro">
+          <em>Тихий помощник</em>,<br/>
+          который знает<br/>
+          вашу команду.
+        </h2>
+      </div>
+      <div>
+        <p class="team__quote">
+          После steady-state в EstateOS входят голосовые AI-агенты.
+          Не агрессивный продавец и не «робот вместо тебя» — а доверенный
+          коллега, который снимает рутину и появляется в нужный момент.
+          Звонки, обучение, аудит&nbsp;качества — голосом.
+        </p>
+      </div>
+    </div>
+
+    <div class="agents">
+
+      <!-- AI секретарь -->
+      <article class="agent-card">
+        <div class="agent-card__head">
+          <div class="agent-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <span class="soon-badge">Скоро · roadmap</span>
+        </div>
+        <h3 class="agent-card__title">AI-секретарь<br/>на входящие звонки</h3>
+        <p class="agent-card__desc">
+          Покупатель звонит по&nbsp;объявлению с&nbsp;Авито или Циан. AI квалифицирует
+          лид (бюджет, район, срочность, цель) и&nbsp;ставит встречу в&nbsp;календарь
+          агента — без&nbsp;потерянных звонков и&nbsp;занятых линий.
+        </p>
+        <div class="agent-card__signals">
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot"></span>
+            Авито · 2-к, Митино, до&nbsp;18&nbsp;млн
+            <span class="agent-card__signal-time">входящий</span>
+          </div>
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot" style="background:var(--success);box-shadow:0 0 0 3px rgba(122,158,107,0.18)"></span>
+            Встреча · Аня&nbsp;П. · завтра&nbsp;14:30
+            <span class="agent-card__signal-time">в&nbsp;календаре</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- AI стажёр -->
+      <article class="agent-card">
+        <div class="agent-card__head">
+          <div class="agent-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </div>
+          <span class="soon-badge">Скоро · roadmap</span>
+        </div>
+        <h3 class="agent-card__title">AI-стажёр<br/>в чате 24/7</h3>
+        <p class="agent-card__desc">
+          Новый агент задаёт вопросы&nbsp;— AI отвечает, опираясь на&nbsp;регламенты
+          агентства и&nbsp;записи показов лучших коллег. Адаптация без&nbsp;ожидания
+          руководителя и&nbsp;без&nbsp;пустых вопросов в&nbsp;общий чат.
+        </p>
+        <div class="agent-card__signals">
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot"></span>
+            «Как&nbsp;закрыть возражение по&nbsp;аренде?»
+            <span class="agent-card__signal-time">23:14</span>
+          </div>
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot" style="background:var(--success);box-shadow:0 0 0 3px rgba(122,158,107,0.18)"></span>
+            Ответ&nbsp;+ скрипт + кейс из&nbsp;показа
+            <span class="agent-card__signal-time">+8&nbsp;сек</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Mystery shopper -->
+      <article class="agent-card">
+        <div class="agent-card__head">
+          <div class="agent-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              <circle cx="19" cy="5" r="2.4" fill="currentColor" stroke="none" opacity="0.9"/>
+            </svg>
+          </div>
+          <span class="soon-badge">Скоро · roadmap</span>
+        </div>
+        <h3 class="agent-card__title">Mystery shopper<br/>исходящие звонки</h3>
+        <p class="agent-card__desc">
+          AI&nbsp;звонит вашим агентам как&nbsp;клиент: оценивает по&nbsp;SPIN,
+          фиксирует слабые места, готовит&nbsp;разбор. Параллельно&nbsp;— сканирует
+          конкурентов: цены, аргументация, скрипты.
+        </p>
+        <div class="agent-card__signals">
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot"></span>
+            Тест-звонок · Виктор&nbsp;Л. · 04:12
+            <span class="agent-card__signal-time">исходящий</span>
+          </div>
+          <div class="agent-card__signal">
+            <span class="agent-card__signal-dot" style="background:var(--warning);box-shadow:0 0 0 3px rgba(212,168,76,0.18)"></span>
+            SPIN&nbsp;score 72 · слабая&nbsp;импликация
+            <span class="agent-card__signal-time">+отчёт</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     FOR OWNERS
+     =========================================================== -->
+<section class="section" id="owners" data-screen-label="Для владельцев">
+  <div class="container">
+    <div class="owners">
+      <div>
+        <span class="section-label">— Для владельцев</span>
+        <h2 class="owners__quote" style="margin-top:24px">
+          Для тех, кто <em>строит</em> агентство.<br/>
+          И для команды, которая в&nbsp;нём работает.
+        </h2>
+        <p class="lead" style="margin-top:24px">
+          Владельцу — картина агентства каждое утро, без&nbsp;планёрок и&nbsp;сводок.
+          Менеджеру — отчёт голосом за&nbsp;минуту вместо Excel-табличек и&nbsp;CRM-полей.
+          EstateOS работает на&nbsp;обе стороны: одни видят результат, другие&nbsp;— избавлены от&nbsp;рутины.
+        </p>
+        <div class="owners__cite">
+          <div class="owners__cite-avatar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF8F3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="owners__cite-name">Владелец агентства недвижимости</div>
+            <div class="owners__cite-role">Design partner EstateOS · Москва</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="benefit__title">5 минут на&nbsp;агентство в&nbsp;день</div>
+            <div class="benefit__desc">Утренний разбор — в&nbsp;пробке, за&nbsp;кофе, перед первым звонком. Не&nbsp;нужно открывать ноутбук, чтобы узнать, что вчера произошло.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div>
+            <div class="benefit__title">Слепые зоны исчезают</div>
+            <div class="benefit__desc">Не&nbsp;закрытый follow-up, упавшая скорость отчётов, агент-чемпион, идущий на&nbsp;спад — всё всплывает само, без&nbsp;планёрки.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="benefit__title">Команда растёт без&nbsp;вашего участия</div>
+            <div class="benefit__desc">SPIN-тренажёр прокачивает агентов между показами. Вы&nbsp;видите прогресс на&nbsp;дашборде, не&nbsp;ведя коучинг&nbsp;вручную.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="benefit__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <div class="benefit__title">Контроль остаётся&nbsp;у&nbsp;вас</div>
+            <div class="benefit__desc">EstateOS не&nbsp;звонит клиентам и&nbsp;не&nbsp;принимает решений. Он&nbsp;собирает картину&nbsp;— решает агентство.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     BIG STATS
+     =========================================================== -->
+<section class="section section--tight" data-screen-label="Метрики">
+  <div class="container">
+    <div class="bigstats">
+      <div class="bigstat">
+        <div class="bigstat__num"><em>9:30</em></div>
+        <div class="bigstat__label">МСК. Каждый день. Голосовой разбор на&nbsp;вашем iPhone.</div>
+      </div>
+      <div class="bigstat">
+        <div class="bigstat__num"><em>4:38</em></div>
+        <div class="bigstat__label">Средняя длина утреннего разбора. Меньше, чем поездка до&nbsp;офиса.</div>
+      </div>
+      <div class="bigstat">
+        <div class="bigstat__num"><em>87%</em></div>
+        <div class="bigstat__label">Follow-up закрываются вовремя — впервые с&nbsp;запуска агентства.</div>
+      </div>
+      <div class="bigstat">
+        <div class="bigstat__num">×<em>3.2</em></div>
+        <div class="bigstat__label">Скорость отчёта после показа: голос вместо CRM-формы.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     FINAL CTA
+     =========================================================== -->
+<section class="section section--tight" id="login" data-screen-label="CTA">
+  <div class="container">
+    <div class="final-cta">
+      <span class="eyebrow" style="margin-bottom:24px">Доступно по&nbsp;приглашению</span>
+      <h2>Войдите в&nbsp;EstateOS<br/>и&nbsp;услышьте своё агентство.</h2>
+      <p>Первый разбор приходит на&nbsp;следующее утро после&nbsp;первого показа. Без&nbsp;карт, без&nbsp;онбординга на&nbsp;30&nbsp;минут.</p>
+      <div class="final-cta__row">
+        <a href="mailto:hi@estateos.ru" class="btn btn--primary">
+          Запросить доступ
+          <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#product" class="btn btn--ghost">Посмотреть продукт</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===========================================================
+     FOOTER
+     =========================================================== -->
+<footer class="footer" data-screen-label="Footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand">
+          <svg width="32" height="32"><use href="#logo-mark"/></svg>
+          <span class="footer__brand-text">EstateOS</span>
+        </div>
+        <p class="footer__tagline">
+          Операционная система для&nbsp;агентств недвижимости. Голос агента,
+          утренний разбор, аналитика, тренажёр продаж.
+        </p>
+      </div>
+      <div>
+        <div class="footer__col-title">Продукт</div>
+        <a href="#" class="footer__link">Утренний разбор</a>
+        <a href="#" class="footer__link">Голос агента</a>
+        <a href="#" class="footer__link">Аналитика</a>
+        <a href="#" class="footer__link">SPIN-тренажёр</a>
+      </div>
+      <div>
+        <div class="footer__col-title">Агентство</div>
+        <a href="#" class="footer__link">Для владельцев</a>
+        <a href="#" class="footer__link">Для агентов</a>
+        <a href="#" class="footer__link">Кейсы клиентов</a>
+        <a href="#" class="footer__link">Roadmap</a>
+      </div>
+      <div>
+        <div class="footer__col-title">Контакты</div>
+        <a href="mailto:hi@estateos.ru" class="footer__link">hi@estateos.ru</a>
+        <a href="#" class="footer__link">estateos.ru</a>
+        <a href="#" class="footer__link">Telegram</a>
+        <a href="#" class="footer__link">Демо для агентств</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div>© 2026 EstateOS · estateos.ru</div>
+      <div class="footer__legal">
+        <a href="#">Условия</a>
+        <a href="#">Конфиденциальность</a>
+        <a href="#">Безопасность данных</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // soft nav state on scroll
+  (function () {
+    const nav = document.querySelector('.nav__inner');
+    if (!nav) return;
+    const onScroll = () => {
+      const scrolled = window.scrollY > 24;
+      nav.style.background = scrolled ? 'rgba(255, 253, 250, 0.86)' : 'rgba(255, 253, 250, 0.72)';
+      nav.style.boxShadow = scrolled
+        ? '0 1px 0 rgba(255,255,255,0.6) inset, 0 18px 50px -20px rgba(44,37,32,0.18)'
+        : '0 1px 0 rgba(255,255,255,0.6) inset, 0 12px 40px -16px rgba(44,37,32,0.12)';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
+<script>
+  // chip cycling: rotate between states
+  (function () {
+    const states = {
+      'hero__chip--1': [
+        { color: 'success', label: 'Запись агента · 04:12', time: 'сейчас' },
+        { color: 'success', label: 'Показ в Митино · 14:30', time: '+15 мин' },
+        { color: 'brand',   label: 'AI-секретарь · входящий', time: 'сейчас' },
+      ],
+      'hero__chip--2': [
+        { color: 'brand',   label: 'Утренний разбор готов', time: '9:30' },
+        { color: 'brand',   label: 'Расшифровка · 5 полей', time: '+6 сек' },
+        { color: 'success', label: 'Follow-up закрыт · Аня', time: 'сегодня' },
+      ],
+      'hero__chip--3': [
+        { color: 'warn',    label: '5 показов · 2 follow-up', time: 'сегодня' },
+        { color: 'warn',    label: 'SPIN · «ипотечник»', time: 'в эфире' },
+        { color: 'success', label: 'Горячая сделка · 92%', time: 'Лефортово' },
+      ],
+    };
+
+    function applyState(chip, state) {
+      const dot  = chip.querySelector('.hero__chip-dot');
+      const text = chip.querySelector('.hero__chip-text');
+      const time = chip.querySelector('.hero__chip-time');
+      dot.className = 'hero__chip-dot hero__chip-dot--' + state.color;
+      text.textContent = state.label;
+      time.textContent = state.time;
+    }
+
+    Object.entries(states).forEach(([cls, list], chipIdx) => {
+      const chip = document.querySelector('.' + cls);
+      if (!chip) return;
+      let i = 0;
+      // stagger start so they don't flip in sync
+      setTimeout(() => {
+        setInterval(() => {
+          chip.classList.add('is-fading');
+          setTimeout(() => {
+            i = (i + 1) % list.length;
+            applyState(chip, list[i]);
+            chip.classList.remove('is-fading');
+          }, 380);
+        }, 4200);
+      }, chipIdx * 1100);
+    });
+  })();
+</script>
+
+</body>
+</html>
