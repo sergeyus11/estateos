@@ -230,7 +230,7 @@ function Hero() {
             <h1 className="hero__title">
               Операционная<br />
               система для<br />
-              <em>агентств недвижимости.</em>
+              <em>агентств <span className="hero__title-wrap">недвижимости.</span></em>
             </h1>
             <p className="hero__sub">
               Голос агента превращается в&nbsp;структурированный отчёт. Утренний разбор появляется
