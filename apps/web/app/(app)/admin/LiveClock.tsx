@@ -54,7 +54,11 @@ export function LiveClock() {
   );
 }
 
-/** Маленький badge «МСК HH:MM» (top-right плитки). На сервере не рендерится. */
+/** Маленький badge «МСК HH:MM» (head плитки).
+ *  Не рендерится:
+ *    - до hydration (SSR placeholder)
+ *    - если у пользователя браузерное TZ == МСК (дубль с LocalTimezoneLabel)
+ */
 export function MoscowTimeBadge() {
   const [mounted, setMounted] = useState(false);
   const [{ hh, mm }, setT] = useState<Parts>({ hh: '--', mm: '--' });
@@ -69,13 +73,12 @@ export function MoscowTimeBadge() {
     return () => clearInterval(t);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || isMsk) return null;
 
   return (
     <span className="msk-badge" suppressHydrationWarning title="Московское время">
       <span className="msk-badge__label">МСК</span>
       {hh}<span className="live-clock__colon" aria-hidden="true">:</span>{mm}
-      {isMsk && <span className="msk-badge__local-hint" aria-hidden="true">· локальное</span>}
     </span>
   );
 }
