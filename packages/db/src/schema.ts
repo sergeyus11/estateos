@@ -203,6 +203,49 @@ export const trainingSessions = pgTable('training_sessions', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
 });
 
+export const narrativeStatus = pgEnum('narrative_status', [
+  'pending',
+  'generating',
+  'ready',
+  'error',
+]);
+
+export type NarrativeStats = {
+  showsToday: number;
+  showsYesterday: number;
+  weekTotal: number;
+  activeAgents: number;
+  topAgent: { name: string; count: number } | null;
+  topObject: string | null;
+  hotProspects: Array<{ object: string; client: string; reaction: string }>;
+};
+
+export const morningNarratives = pgTable('morning_narratives', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id')
+    .notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  adminId: text('admin_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  periodDate: text('period_date').notNull(),
+  narrativeText: text('narrative_text'),
+  audioPath: text('audio_path'),
+  audioDurationSec: text('audio_duration_sec'),
+  stats: jsonb('stats').notNull().default({}).$type<NarrativeStats>(),
+  status: narrativeStatus('status').notNull().default('pending'),
+  errorMessage: text('error_message'),
+  costUsd: text('cost_usd'),
+  generatedAt: timestamp('generated_at', { withTimezone: true }),
+  listenedAt: timestamp('listened_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .default(sql`now()`),
+});
+
+export type MorningNarrative = typeof morningNarratives.$inferSelect;
+export type NewMorningNarrative = typeof morningNarratives.$inferInsert;
+
 export type Organization = typeof organizations.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
