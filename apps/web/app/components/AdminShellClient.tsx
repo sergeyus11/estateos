@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { AppShell, AppShellLogoMark, NavIcon, type AppShellNavGroup } from './AppShell';
 import { ProfileSheet, type ProfileUser } from './ProfileSheet';
+import { MoscowTimeBadge } from '../(app)/admin/LiveClock';
 
 type Tab = {
   href: string;
@@ -66,14 +67,17 @@ export function AdminShellClient({ user, children }: { user: ProfileUser; childr
             <AppShellLogoMark size={28} />
             <span className="mob-topbar__brand-text">EstateOS</span>
           </Link>
-          <button
-            type="button"
-            className="mob-topbar__avatar"
-            onClick={() => setProfileOpen(true)}
-            aria-label="Открыть профиль"
-          >
-            {initials}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+            <span className="mob-topbar__msk"><MoscowTimeBadge /></span>
+            <button
+              type="button"
+              className="mob-topbar__avatar"
+              onClick={() => setProfileOpen(true)}
+              aria-label="Открыть профиль"
+            >
+              {initials}
+            </button>
+          </div>
         </header>
 
         <main className="mob-main">{children}</main>

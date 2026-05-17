@@ -2,7 +2,7 @@ import { db, showReports, users, morningNarratives } from '@estateos/db';
 import { eq, gte, and, desc, sql as drizzleSql } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth-server';
 import Link from 'next/link';
-import { LiveClock } from './LiveClock';
+import { LiveClock, LocalTimezoneLabel } from './LiveClock';
 
 export const dynamic = 'force-dynamic';
 
@@ -191,6 +191,24 @@ export default async function AdminHome() {
         </Link>
       )}
 
+      <Link
+        href={'/admin/narrator/demo' as never}
+        className="demo-narrative-strip"
+        aria-label="Послушать демо утреннего разбора"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+          <path d="M21 19a2 2 0 0 1-2 2h-1v-7h3v5zM3 19a2 2 0 0 0 2 2h1v-7H3v5z" />
+        </svg>
+        <span>
+          <strong>Послушать пример</strong> · как звучит утренний разбор голосом Charlotte ·{' '}
+          <span style={{ color: 'var(--ink-3)' }}>сценарий: коммерция в Краснодаре</span>
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', color: 'var(--ink-3)' }}>
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </Link>
+
       <section className="dash">
         <div className="kpi">
           <div className="kpi__label">Сегодня · показов</div>
@@ -210,11 +228,10 @@ export default async function AdminHome() {
         <div className="kpi" style={{ background: 'linear-gradient(180deg,#FBF8F4,#F2EDE8)' }}>
           <div className="kpi__label">Сейчас</div>
           <div className="kpi__value" style={{ fontSize: 28 }}>
-            <LiveClock />{' '}
-            <span className="kpi__value-suffix">МСК</span>
+            <LiveClock /> <LocalTimezoneLabel />
           </div>
           <div className="kpi__delta" style={{ color: 'var(--ink-3)' }}>
-            {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Moscow' })}
+            {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
           </div>
         </div>
       </section>
