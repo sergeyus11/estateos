@@ -552,7 +552,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .live-clock__colon {
   display: inline-block;
-  animation: clock-colon-blink 1s step-end infinite;
+  animation: clock-colon-blink 3s step-end infinite;
   padding: 0 1px;
 }
 @keyframes clock-colon-blink {
