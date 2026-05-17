@@ -66,13 +66,14 @@ export function MoscowTimeBadge() {
     return () => clearInterval(t);
   }, []);
 
-  // Если пользователь уже в МСК — не показываем badge (избыточно)
-  if (localTz === 'МСК') return null;
+  // Если local TZ уже МСК — показываем serverlessly «=local», иначе разница.
+  const isMsk = localTz === 'МСК';
 
   return (
     <span className="msk-badge" suppressHydrationWarning title="Московское время">
       <span className="msk-badge__label">МСК</span>
       {hh}<span className="live-clock__colon" aria-hidden="true">:</span>{mm}
+      {isMsk && <span className="msk-badge__local-hint" aria-hidden="true">· локальное</span>}
     </span>
   );
 }

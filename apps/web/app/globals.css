@@ -733,9 +733,17 @@ img, svg { display: block; max-width: 100%; }
   letter-spacing: 0.08em;
 }
 
-/* МСК-badge внутри mobile top-bar — слева от avatar */
-.mob-topbar__msk {
-  margin-right: 10px;
+/* МСК-badge внутри KPI «Сейчас» — абсолютно в правом верхнем углу плитки */
+.kpi--clock { position: relative; }
+.kpi__msk-corner {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+}
+.msk-badge__local-hint {
+  margin-left: 4px;
+  color: var(--ink-4);
+  font-size: 9px;
 }
 .live-clock__colon {
   display: inline-block;
