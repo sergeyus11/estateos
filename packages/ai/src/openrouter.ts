@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 let _client: OpenAI | null = null;
 
-function getClient(): OpenAI {
+export function getOpenRouterClient(): OpenAI {
   if (_client) return _client;
   if (!process.env.OPENROUTER_API_KEY) {
     throw new Error('OPENROUTER_API_KEY is required');
@@ -17,6 +17,9 @@ function getClient(): OpenAI {
   });
   return _client;
 }
+
+// Backward-compat alias for internal usage in this module.
+const getClient = getOpenRouterClient;
 
 // kimi-k2 via Novita (supports structured-ish output via prompting)
 const KIMI_MODEL = 'moonshotai/kimi-k2';

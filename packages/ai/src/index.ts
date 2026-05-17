@@ -6,5 +6,6 @@ export * from './tts';
 export * from './personas';
 export * from './personaDialog';
 export * from './spinAnalyzer';
+export * from './morningNarrator';
 
-export const AI_PACKAGE_VERSION = '0.3.0-phase3';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2';

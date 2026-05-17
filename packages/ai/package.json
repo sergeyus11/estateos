@@ -1,15 +1,19 @@
 {
   "name": "@estateos/ai",
-  "version": "0.3.0",
+  "version": "0.4.0-phase2",
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@deepgram/sdk": "3.10.1",
     "@estateos/db": "workspace:*",
     "openai": "4.77.0"
   },
   "devDependencies": {
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "vitest": "2.1.8"
   }
 }
