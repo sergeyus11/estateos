@@ -29,8 +29,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No audio' }, { status: 400 });
   }
 
+  const MAX_AUDIO_BYTES = 10 * 1024 * 1024; // 10 MB
+
+  if (audio.size > MAX_AUDIO_BYTES) {
+    return NextResponse.json(
+      { error: 'Audio too large', max: MAX_AUDIO_BYTES },
+      { status: 413 }
+    );
+  }
+
+  let buf: Buffer;
   try {
-    const buf = Buffer.from(await audio.arrayBuffer());
+    buf = Buffer.from(await audio.arrayBuffer());
+  } catch {
+    return NextResponse.json({ error: 'Failed to read audio' }, { status: 400 });
+  }
+
+  try {
     const { transcript } = await transcribe(buf, audio.type || 'audio/webm');
     if (!transcript) {
       return NextResponse.json({ error: 'STT failed' }, { status: 422 });
@@ -62,7 +77,7 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    if (!parsed || parsed.confidence < 0.4) {
+    if (!parsed || parsed.confidence < 0.5) {
       return NextResponse.json({
         transcript,
         intent: 'unclear',
