@@ -135,7 +135,28 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        return NextResponse.json({ transcript, intent: 'create_event', preview: parsed });
+        let resolvedClientName: string | undefined;
+        let resolvedObjectTitle: string | undefined;
+
+        if (parsed.client_match && 'id' in parsed.client_match) {
+          const clientId = parsed.client_match.id;
+          const found = ownClients.find((client) => client.id === clientId);
+          if (found) resolvedClientName = found.name ?? undefined;
+        }
+
+        if (parsed.object_match && 'id' in parsed.object_match) {
+          const objectId = parsed.object_match.id;
+          const found = ownObjects.find((object) => object.id === objectId);
+          if (found) resolvedObjectTitle = found.title ?? undefined;
+        }
+
+        return NextResponse.json({
+          transcript,
+          intent: 'create_event',
+          preview: parsed,
+          client_name: resolvedClientName,
+          object_title: resolvedObjectTitle,
+        });
       }
 
       case 'search': {

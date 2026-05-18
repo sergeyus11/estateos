@@ -10,6 +10,15 @@ type Props = {
   reportId?: string;
 };
 
+function pickSupportedMime(): string {
+  if (typeof MediaRecorder === 'undefined') return '';
+  const candidates = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac'];
+  for (const mime of candidates) {
+    if (MediaRecorder.isTypeSupported(mime)) return mime;
+  }
+  return '';
+}
+
 export function MicRecorder({ onUpload, buttonLabel = 'Записать показ', reportId }: Props) {
   const [state, setState] = useState<State>('idle');
   const [seconds, setSeconds] = useState(0);
@@ -30,16 +39,19 @@ export function MicRecorder({ onUpload, buttonLabel = 'Записать пока
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      const mime = pickSupportedMime();
+      const mr = mime
+        ? new MediaRecorder(stream, { mimeType: mime })
+        : new MediaRecorder(stream);
       chunksRef.current = [];
       mr.ondataavailable = (e) => e.data.size > 0 && chunksRef.current.push(e.data);
       mr.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const blob = new Blob(chunksRef.current, { type: mime || 'audio/webm' });
         setState('uploading');
         try {
           const fd = new FormData();
-          fd.append('audio', blob, 'show.webm');
+          fd.append('audio', blob, 'show.audio');
           if (reportId) fd.append('reportId', reportId);
           await onUpload(fd);
           setState('idle');
@@ -95,7 +107,20 @@ export function MicRecorder({ onUpload, buttonLabel = 'Записать пока
             : 'bg-brand-500 text-white hover:bg-brand-700'
         }`}
       >
-        {state === 'recording' ? `⏹  ${display}` : display}
+        {state === 'recording' ? (
+          <span className="inline-flex items-center gap-2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <rect x="6" y="6" width="12" height="12" rx="1.5" />
+            </svg>
+            {display}
+          </span>
+        ) : display}
       </button>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

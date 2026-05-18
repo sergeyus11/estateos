@@ -19,7 +19,13 @@ type ParsedEventPreview = {
 type SearchResult = { id: string; name?: string; title?: string; address?: string | null };
 
 type VoiceResult =
-  | { intent: 'create_event'; transcript: string; preview: ParsedEventPreview }
+  | {
+      intent: 'create_event';
+      transcript: string;
+      preview: ParsedEventPreview;
+      client_name?: string;
+      object_title?: string;
+    }
   | { intent: 'search'; transcript: string; entity: string; results: SearchResult[] }
   | { intent: 'send_template'; transcript: string; draft: { client?: unknown; message: string } }
   | { intent: 'generic'; transcript: string; answer: string }
@@ -52,15 +58,21 @@ function formatScheduled(iso: string): string {
   }
 }
 
-function getClientLabel(match: ParsedEventPreview['client_match']): string | null {
+function getClientLabel(
+  match: ParsedEventPreview['client_match'],
+  resolvedName?: string
+): string | null {
   if (!match) return null;
-  if ('id' in match) return `Клиент #${match.id}`;
+  if ('id' in match) return resolvedName ?? `Клиент #${match.id}`;
   return match.suggested_name;
 }
 
-function getObjectLabel(match: ParsedEventPreview['object_match']): string | null {
+function getObjectLabel(
+  match: ParsedEventPreview['object_match'],
+  resolvedTitle?: string
+): string | null {
   if (!match) return null;
-  if ('id' in match) return `Объект #${match.id}`;
+  if ('id' in match) return resolvedTitle ?? `Объект #${match.id}`;
   return match.suggested_title;
 }
 
@@ -230,14 +242,16 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
                   <p className="text-sm text-gray-600">
                     {formatScheduled(voiceResult.preview.scheduled_at_iso)}
                   </p>
-                  {getClientLabel(voiceResult.preview.client_match) && (
+                  {getClientLabel(voiceResult.preview.client_match, voiceResult.client_name) && (
                     <p className="text-xs text-gray-500">
-                      Клиент: {getClientLabel(voiceResult.preview.client_match)}
+                      Клиент:{' '}
+                      {getClientLabel(voiceResult.preview.client_match, voiceResult.client_name)}
                     </p>
                   )}
-                  {getObjectLabel(voiceResult.preview.object_match) && (
+                  {getObjectLabel(voiceResult.preview.object_match, voiceResult.object_title) && (
                     <p className="text-xs text-gray-500">
-                      Объект: {getObjectLabel(voiceResult.preview.object_match)}
+                      Объект:{' '}
+                      {getObjectLabel(voiceResult.preview.object_match, voiceResult.object_title)}
                     </p>
                   )}
                   {voiceResult.preview.address && (
