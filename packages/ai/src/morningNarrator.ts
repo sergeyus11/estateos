@@ -1,4 +1,4 @@
-import { getOpenRouterClient } from './openrouter';
+import { llmChat } from './openrouter';
 
 /* ============================================================
  *  Owner-Narrative stats type (Phase 2.5)
@@ -164,36 +164,45 @@ ${emptyHint}
 Верни ТОЛЬКО сам текст нарратива, без префиксов, без кавычек, без «Вот нарратив:».`;
 }
 
+// TODO(C9): move PRICING + computeCostUsd to openrouter.ts when morningBrief.ts is split out
+const PRICING: Record<string, { in: number; out: number }> = {
+  'moonshotai/kimi-k2': { in: 0.4, out: 0.8 },
+  'google/gemini-2.5-flash-lite': { in: 0.10, out: 0.40 },
+  'google/gemini-2.5-flash': { in: 0.30, out: 2.50 },
+};
+
+export function computeCostUsd(
+  model: string,
+  usage: { promptTokens: number; completionTokens: number } | undefined
+): number {
+  if (!usage) return 0;
+  const price = Object.hasOwn(PRICING, model) ? PRICING[model] : null;
+  if (!price) {
+    console.warn(`[morningNarrator] No PRICING for model "${model}", reporting cost as 0`);
+    return 0;
+  }
+  return (
+    (usage.promptTokens / 1_000_000) * price.in +
+    (usage.completionTokens / 1_000_000) * price.out
+  );
+}
+
 export async function generateMorningNarrative(stats: NarratorStats): Promise<{
   text: string;
   costUsd: number;
   latencyMs: number;
 }> {
   const start = Date.now();
-  const client = getOpenRouterClient();
   const prompt = buildNarratorPrompt(stats);
 
-  const res = await client.chat.completions.create({
-    model: 'moonshotai/kimi-k2',
-    messages: [
-      {
-        role: 'system',
-        content:
-          'Ты пишешь утренний устный нарратив для совладельца агентства недвижимости. Естественная речь без markdown, плавно перетекающие предложения, без bullet-points. ~290 слов / 2 минуты звучания.',
-      },
-      { role: 'user', content: prompt },
-    ],
+  const BRIEF_SYSTEM = 'Ты пишешь утренний устный нарратив для совладельца агентства недвижимости. Естественная речь без markdown, плавно перетекающие предложения, без bullet-points. ~290 слов / 2 минуты звучания.';
+
+  const { text, usage, model } = await llmChat(BRIEF_SYSTEM, prompt, {
+    task: 'brief',
     temperature: 0.55,
-    max_tokens: 900,
-    provider: { order: ['Novita'], allow_fallbacks: false },
-  } as never);
+    maxTokens: 900,
+  });
+  const costUsd = computeCostUsd(model, usage);
 
-  const text = res.choices[0]?.message?.content?.trim() || '';
-  const usage = res.usage;
-  const costUsd = usage
-    ? (usage.prompt_tokens / 1_000_000) * 0.4 +
-      (usage.completion_tokens / 1_000_000) * 0.8
-    : 0;
-
-  return { text, costUsd, latencyMs: Date.now() - start };
+  return { text: text.trim(), costUsd, latencyMs: Date.now() - start };
 }
