@@ -9,14 +9,18 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${REPO_ROOT}"
 
 # DATABASE_URL is the single source of truth for both migrate and backfill.
-# Override by setting DATABASE_URL before invoking the script.
-: "${POSTGRES_PASSWORD:=estateos_dev}"
-: "${DATABASE_URL:=postgresql://estateos:${POSTGRES_PASSWORD}@localhost:30210/estateos}"
-export DATABASE_URL
-
-if [ "${DATABASE_URL}" = "postgresql://estateos:estateos_dev@localhost:30210/estateos" ]; then
-  echo "WARN: using default DATABASE_URL with POSTGRES_PASSWORD=estateos_dev (dev fallback)."
+# Either DATABASE_URL must be set, OR POSTGRES_PASSWORD must be set (we'll compose DATABASE_URL from it).
+if [ -z "${DATABASE_URL:-}" ]; then
+  if [ -z "${POSTGRES_PASSWORD:-}" ]; then
+    echo "ERROR: must set either DATABASE_URL or POSTGRES_PASSWORD before running this script." >&2
+    echo "Example:" >&2
+    echo "  POSTGRES_PASSWORD=<prod-pw> bash scripts/apply-migration-0005.sh" >&2
+    echo "  DATABASE_URL=postgresql://user:pw@host:port/db bash scripts/apply-migration-0005.sh" >&2
+    exit 1
+  fi
+  DATABASE_URL="postgresql://estateos:${POSTGRES_PASSWORD}@localhost:30210/estateos"
 fi
+export DATABASE_URL
 
 echo "-> Step 1: drizzle migrate (packages/db)"
 pnpm --filter @estateos/db migrate

@@ -18,6 +18,20 @@ describe('apply-migration-0005.sh', () => {
     expect(scriptContent).toContain('export DATABASE_URL');
   });
 
+  it('requires DATABASE_URL or POSTGRES_PASSWORD to be set explicitly', () => {
+    expect(scriptContent).not.toContain(': "${POSTGRES_PASSWORD:=estateos_dev}"');
+    expect(scriptContent).not.toContain('WARN: using default DATABASE_URL');
+    expect(scriptContent).toContain('must set either DATABASE_URL or POSTGRES_PASSWORD');
+
+    const result = spawnSync('bash', [scriptPath], {
+      env: { PATH: process.env.PATH! } as unknown as NodeJS.ProcessEnv,
+      encoding: 'utf8',
+    });
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toMatch(/must set either DATABASE_URL or POSTGRES_PASSWORD/);
+  });
+
   it('uses strict bash settings', () => {
     expect(scriptContent).toContain('set -euo pipefail');
   });

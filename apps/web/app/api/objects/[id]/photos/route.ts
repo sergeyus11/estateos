@@ -81,20 +81,29 @@ export async function POST(
   // Keep the cap check and append in one SQL UPDATE. Postgres row-level locking
   // rechecks this WHERE clause under concurrent uploads, so losers do not
   // overwrite photos added by another request.
-  const result = await db
-    .update(objects)
-    .set({
-      photos: sql`${objects.photos} || ${JSON.stringify([url])}::jsonb`,
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(objects.id, id),
-        eq(objects.organizationId, user.organizationId),
-        sql`jsonb_array_length(${objects.photos}) < ${MAX_PHOTOS_PER_OBJECT}`
+  let result: { photos: unknown }[];
+  try {
+    result = await db
+      .update(objects)
+      .set({
+        photos: sql`${objects.photos} || ${JSON.stringify([url])}::jsonb`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(objects.id, id),
+          eq(objects.organizationId, user.organizationId),
+          sql`jsonb_array_length(${objects.photos}) < ${MAX_PHOTOS_PER_OBJECT}`
+        )
       )
-    )
-    .returning({ photos: objects.photos });
+      .returning({ photos: objects.photos });
+  } catch (e) {
+    console.error('[photos] UPDATE failed', e);
+    await deleteObjectPhotoFile(url).catch((cleanupErr) => {
+      console.error('[photos] orphan cleanup failed after UPDATE error', cleanupErr);
+    });
+    return NextResponse.json({ error: 'Failed to save photo' }, { status: 500 });
+  }
 
   if (result.length === 0) {
     await deleteObjectPhotoFile(url).catch((e) => {
