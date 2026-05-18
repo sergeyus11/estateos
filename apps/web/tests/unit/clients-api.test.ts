@@ -1,7 +1,29 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 import { db, organizations, users, clients } from '@estateos/db';
 import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import { PATCH } from '@/app/api/clients/[id]/route';
+
+const authMock = vi.hoisted(() => ({ currentUserId: '' }));
+
+vi.mock('@/lib/auth-server', async () => {
+  const { db, users } = await import('@estateos/db');
+  const { eq } = await import('drizzle-orm');
+
+  return {
+    requireAgentOrAdmin: async () => {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, authMock.currentUserId))
+        .limit(1);
+
+      if (!user) throw new Response('Unauthorized', { status: 401 });
+      return user;
+    },
+  };
+});
 
 const orgId = `test-org-${nanoid(8)}`;
 const agentId = `test-agent-${nanoid(8)}`;
@@ -100,5 +122,29 @@ describe('clients DB operations (integration)', () => {
       .returning();
 
     expect(updated.status).toBe('active');
+  });
+
+  it('PATCH /api/clients/[id] возвращает 404 для чужой org', async () => {
+    const otherClientId = nanoid(16);
+    await db.insert(clients).values({
+      id: otherClientId,
+      organizationId: otherOrgId,
+      createdByUserId: otherAgentId,
+      name: 'Other org client',
+      status: 'active',
+    });
+
+    const req = new NextRequest(`http://localhost/api/clients/${otherClientId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-test-auth-user-id': agentId },
+      body: JSON.stringify({ name: 'Hacked' }),
+    });
+    authMock.currentUserId = req.headers.get('x-test-auth-user-id') ?? '';
+    const res = await PATCH(req, { params: Promise.resolve({ id: otherClientId }) });
+
+    expect(res.status).toBe(404);
+
+    const [check] = await db.select().from(clients).where(eq(clients.id, otherClientId));
+    expect(check.name).toBe('Other org client');
   });
 });

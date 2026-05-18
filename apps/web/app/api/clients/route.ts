@@ -42,7 +42,8 @@ export async function GET(_req: NextRequest) {
     .select()
     .from(clients)
     .where(eq(clients.organizationId, user.organizationId))
-    .orderBy(desc(clients.updatedAt));
+    .orderBy(desc(clients.updatedAt))
+    .limit(500);
 
   return NextResponse.json(rows);
 }
