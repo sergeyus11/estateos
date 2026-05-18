@@ -13,6 +13,11 @@ type TodayEvent = {
 type Props = {
   events: TodayEvent[];
   nowIso: string;
+  briefNarrative?: {
+    id: string;
+    audioPath: string | null;
+    narrativeText: string | null;
+  } | null;
 };
 
 function formatToday(nowIso: string): string {
@@ -45,13 +50,60 @@ function findHeroEvent(events: TodayEvent[], nowIso: string): TodayEvent | null 
   );
 }
 
-export function TodayHome({ events, nowIso }: Props) {
+export function TodayHome({ events, nowIso, briefNarrative }: Props) {
   const hero = findHeroEvent(events, nowIso);
   const nowMs = new Date(nowIso).getTime();
   const remainingCount = events.filter(({ e }) => eventEndMs(e) >= nowMs).length;
+  const audioUrl = briefNarrative?.audioPath ? `/audio/${briefNarrative.audioPath}` : null;
 
   return (
     <div>
+      {briefNarrative && (
+        <section
+          aria-label="Утренний разбор"
+          style={{
+            background: '#f3f0ff',
+            border: '1px solid #c4b5fd',
+            borderRadius: 8,
+            marginBottom: 18,
+            padding: 14,
+          }}
+        >
+          <div
+            style={{
+              color: '#6d5aa8',
+              fontFamily: 'var(--mono)',
+              fontSize: 11,
+              marginBottom: 8,
+              textTransform: 'uppercase',
+            }}
+          >
+            AI · утренний разбор
+          </div>
+          {audioUrl ? (
+            <audio
+              controls
+              src={audioUrl}
+              style={{ display: 'block', width: '100%' }}
+            />
+          ) : (
+            <div style={{ color: 'var(--ink-3)', fontSize: 14 }}>Аудио готовится</div>
+          )}
+          {briefNarrative.narrativeText && (
+            <p
+              style={{
+                color: 'var(--ink-2)',
+                fontSize: 14,
+                lineHeight: 1.5,
+                margin: '10px 0 0',
+              }}
+            >
+              {briefNarrative.narrativeText}
+            </p>
+          )}
+        </section>
+      )}
+
       <div className="page-head">
         <div>
           <div className="page-eyebrow">{formatToday(nowIso)}</div>
