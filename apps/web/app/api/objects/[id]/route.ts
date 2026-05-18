@@ -82,12 +82,6 @@ export async function PATCH(
     );
   }
 
-  const [object] = await db.select().from(objects).where(eq(objects.id, id)).limit(1);
-  if (!object) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  if (object.organizationId !== user.organizationId) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-
   const data = parsed.data;
   const updates: Partial<typeof objects.$inferInsert> = { updatedAt: new Date() };
   if (data.title !== undefined) updates.title = data.title;
@@ -103,8 +97,12 @@ export async function PATCH(
   const [updated] = await db
     .update(objects)
     .set(updates)
-    .where(eq(objects.id, id))
+    .where(and(eq(objects.id, id), eq(objects.organizationId, user.organizationId)))
     .returning();
+
+  if (!updated) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
 
   return NextResponse.json(updated);
 }
@@ -123,12 +121,14 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const [object] = await db.select().from(objects).where(eq(objects.id, id)).limit(1);
-  if (!object) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  if (object.organizationId !== user.organizationId) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const [deleted] = await db
+    .delete(objects)
+    .where(and(eq(objects.id, id), eq(objects.organizationId, user.organizationId)))
+    .returning({ id: objects.id });
+
+  if (!deleted) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  await db.delete(objects).where(eq(objects.id, id));
   return NextResponse.json({ ok: true });
 }

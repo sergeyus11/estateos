@@ -39,9 +39,14 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  if (buffer.length > MAX_PHOTO_BYTES) {
+  if (file.size > MAX_PHOTO_BYTES) {
     return NextResponse.json({ error: 'File too large' }, { status: 413 });
+  }
+  let buffer: Buffer;
+  try {
+    buffer = Buffer.from(await file.arrayBuffer());
+  } catch {
+    return NextResponse.json({ error: 'Failed to read upload' }, { status: 400 });
   }
 
   const { id } = await params;
@@ -65,12 +70,19 @@ export async function POST(
     return NextResponse.json({ error: 'Max 10 photos' }, { status: 400 });
   }
 
-  const url = await saveObjectPhoto(buffer, id, file.type);
+  let url: string;
+  try {
+    url = await saveObjectPhoto(buffer, id, file.type);
+  } catch (e) {
+    console.error('[photos] saveObjectPhoto failed', e);
+    return NextResponse.json({ error: 'Failed to save photo' }, { status: 500 });
+  }
+
   const photos = [...currentPhotos, url];
   await db
     .update(objects)
     .set({ photos, updatedAt: new Date() })
-    .where(eq(objects.id, id));
+    .where(and(eq(objects.id, id), eq(objects.organizationId, user.organizationId)));
 
   return NextResponse.json({ url, photos });
 }

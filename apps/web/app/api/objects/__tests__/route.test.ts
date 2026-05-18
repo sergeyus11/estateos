@@ -7,7 +7,9 @@ import { nanoid } from 'nanoid';
 import { db, objects, organizations, users, type User } from '@estateos/db';
 import { eq } from 'drizzle-orm';
 import { GET, POST } from '../route';
+import { PATCH, DELETE } from '../[id]/route';
 import { POST as POSTPhoto } from '../[id]/photos/route';
+import { GET as GETAudio } from '../../../audio/[...path]/route';
 
 const orgId = `test-objects-org-${nanoid(8)}`;
 const otherOrgId = `test-objects-other-${nanoid(8)}`;
@@ -20,6 +22,7 @@ const mockAuth = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/auth-server', () => ({
+  getCurrentUser: vi.fn(async () => mockAuth.user),
   requireAgentOrAdmin: vi.fn(async () => mockAuth.user),
   requireAdmin: vi.fn(async () => mockAuth.user),
 }));
@@ -217,5 +220,78 @@ describe('/api/objects/:id/photos', () => {
     });
 
     expect(res.status).toBe(400);
+  });
+});
+
+describe('cross-org guards', () => {
+  it('PATCH cross-org object returns 404', async () => {
+    const otherObj = await createObject({
+      organizationId: otherOrgId,
+      createdByUserId: otherAgentId,
+      title: 'Чужая квартира',
+      address: 'Москва, Другая 5',
+    });
+
+    const req = new NextRequest(`http://localhost/api/objects/${otherObj.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: 'Взломано' }),
+    });
+    const res = await PATCH(req, { params: Promise.resolve({ id: otherObj.id }) });
+    expect(res.status).toBe(404);
+
+    const [inDb] = await db.select().from(objects).where(eq(objects.id, otherObj.id));
+    expect(inDb.title).toBe('Чужая квартира');
+  });
+
+  it('DELETE cross-org object returns 404', async () => {
+    mockAuth.user = { id: agentId, organizationId: orgId, role: 'admin' };
+    const otherObj = await createObject({
+      organizationId: otherOrgId,
+      createdByUserId: otherAgentId,
+      title: 'Чужой объект для удаления',
+      address: 'Москва, Другая 6',
+    });
+
+    const req = new NextRequest(`http://localhost/api/objects/${otherObj.id}`, {
+      method: 'DELETE',
+    });
+    const res = await DELETE(req, { params: Promise.resolve({ id: otherObj.id }) });
+    expect(res.status).toBe(404);
+
+    const [inDb] = await db.select().from(objects).where(eq(objects.id, otherObj.id));
+    expect(inDb).toBeTruthy();
+  });
+
+  it('POST photo cross-org returns 404', async () => {
+    const otherObj = await createObject({
+      organizationId: otherOrgId,
+      createdByUserId: otherAgentId,
+      title: 'Чужой объект для фото',
+      address: 'Москва, Другая 7',
+    });
+    const file = new File([Buffer.from([0xff, 0xd8, 0xff, 0xd9])], 'photo.jpg', {
+      type: 'image/jpeg',
+    });
+
+    const res = await POSTPhoto(photoRequest(file), {
+      params: Promise.resolve({ id: otherObj.id }),
+    });
+    expect(res.status).toBe(404);
+  });
+
+  it('GET /audio/objects/<other-org-id>/photo returns 403', async () => {
+    const otherObj = await createObject({
+      organizationId: otherOrgId,
+      createdByUserId: otherAgentId,
+      title: 'Чужой объект для аудио',
+      address: 'Москва, Другая 8',
+    });
+
+    const req = new NextRequest(`http://localhost/audio/objects/${otherObj.id}/photo.jpg`);
+    const res = await GETAudio(req, {
+      params: Promise.resolve({ path: ['objects', otherObj.id, 'photo.jpg'] }),
+    });
+    expect(res.status).toBe(403);
   });
 });

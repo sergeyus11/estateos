@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { db, objects } from '@estateos/db';
+import { eq } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-server';
 
 export const runtime = 'nodejs';
@@ -13,6 +15,10 @@ const MIME_BY_EXT: Record<string, string> = {
   mp4: 'audio/mp4',
   ogg: 'audio/ogg',
   mp3: 'audio/mpeg',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
 };
 
 export async function GET(
@@ -30,6 +36,19 @@ export async function GET(
 
   if (!filePath.startsWith(STORAGE_ROOT)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  if (safeParts[0] === 'objects' && safeParts[1]) {
+    const objectId = safeParts[1];
+    const [obj] = await db
+      .select({ orgId: objects.organizationId })
+      .from(objects)
+      .where(eq(objects.id, objectId))
+      .limit(1);
+
+    if (!obj || obj.orgId !== user.organizationId) {
+      return new Response('Forbidden', { status: 403 });
+    }
   }
 
   try {
