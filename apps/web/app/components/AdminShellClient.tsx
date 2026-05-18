@@ -19,6 +19,7 @@ const TABS: Tab[] = [
   { href: '/admin/narrator', label: 'Утренний разбор', short: 'Разбор', icon: NavIcon.Narrator, badge: 'NEW' },
   { href: '/admin/analytics', label: 'Аналитика', short: 'Анализ', icon: NavIcon.Analytics },
   { href: '/admin/team', label: 'Агенты', short: 'Агенты', icon: NavIcon.Team },
+  { href: '/admin/team-today', label: 'Команда сегодня', short: 'Сегодня', icon: NavIcon.Team },
   { href: '/admin/reports', label: 'Показы', short: 'Показы', icon: NavIcon.Reports },
 ];
 
