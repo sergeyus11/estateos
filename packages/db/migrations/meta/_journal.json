@@ -43,6 +43,13 @@
       "when": 1779102351466,
       "tag": "0005_phase1ext_clients_objects_agenda",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1747526400000,
+      "tag": "0006_agent_settings_brief_at",
+      "breakpoints": true
     }
   ]
 }

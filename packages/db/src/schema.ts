@@ -148,6 +148,7 @@ export const agentSettings = pgTable('agent_settings', {
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
   dayOffDate: text('day_off_date'),
+  briefAt: text('brief_at').notNull().default('08:30'),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
 });
 
