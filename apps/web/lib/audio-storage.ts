@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import path from 'node:path';
 import { nanoid } from 'nanoid';
@@ -55,4 +55,20 @@ export async function saveObjectPhoto(
   await mkdir(path.join(root, dir), { recursive: true });
   await writeFile(path.join(root, dir, filename), buf);
   return `/audio/objects/${objectId}/${filename}`;
+}
+
+export async function deleteObjectPhotoFile(photoUrl: string): Promise<void> {
+  if (!photoUrl.startsWith('/audio/')) return;
+
+  const root = process.env.AUDIO_STORAGE_ROOT ?? STORAGE_ROOT;
+  const relativePath = photoUrl.replace(/^\/audio\//, '');
+  const fullPath = path.join(root, relativePath);
+  const resolvedRoot = path.resolve(root);
+  const resolvedPath = path.resolve(fullPath);
+
+  if (!resolvedPath.startsWith(resolvedRoot + path.sep) && resolvedPath !== resolvedRoot) {
+    throw new Error('Path escape detected');
+  }
+
+  await unlink(fullPath);
 }
