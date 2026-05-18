@@ -1,4 +1,4 @@
-import { getOpenRouterClient } from './openrouter';
+import { llmChat } from './openrouter';
 
 /* ============================================================
  *  Owner-Narrative stats type (Phase 2.5)
@@ -170,30 +170,15 @@ export async function generateMorningNarrative(stats: NarratorStats): Promise<{
   latencyMs: number;
 }> {
   const start = Date.now();
-  const client = getOpenRouterClient();
   const prompt = buildNarratorPrompt(stats);
 
-  const res = await client.chat.completions.create({
-    model: 'moonshotai/kimi-k2',
-    messages: [
-      {
-        role: 'system',
-        content:
-          'Ты пишешь утренний устный нарратив для совладельца агентства недвижимости. Естественная речь без markdown, плавно перетекающие предложения, без bullet-points. ~290 слов / 2 минуты звучания.',
-      },
-      { role: 'user', content: prompt },
-    ],
+  const BRIEF_SYSTEM = 'Ты пишешь утренний устный нарратив для совладельца агентства недвижимости. Естественная речь без markdown, плавно перетекающие предложения, без bullet-points. ~290 слов / 2 минуты звучания.';
+
+  const text = await llmChat(BRIEF_SYSTEM, prompt, {
+    task: 'brief',
     temperature: 0.55,
-    max_tokens: 900,
-    provider: { order: ['Novita'], allow_fallbacks: false },
-  } as never);
+    maxTokens: 900,
+  });
 
-  const text = res.choices[0]?.message?.content?.trim() || '';
-  const usage = res.usage;
-  const costUsd = usage
-    ? (usage.prompt_tokens / 1_000_000) * 0.4 +
-      (usage.completion_tokens / 1_000_000) * 0.8
-    : 0;
-
-  return { text, costUsd, latencyMs: Date.now() - start };
+  return { text: text.trim(), costUsd: 0, latencyMs: Date.now() - start };
 }
