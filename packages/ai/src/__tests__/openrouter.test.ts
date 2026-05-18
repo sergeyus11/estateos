@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getModelForTask } from '../openrouter';
+import { computeCostUsd } from '../morningNarrator';
 
 describe('getModelForTask', () => {
   beforeEach(() => {
@@ -101,5 +102,25 @@ describe('llmChat provider routing (smoke)', () => {
       },
       model: 'google/gemini-2.5-flash-lite',
     });
+  });
+});
+
+describe('computeCostUsd', () => {
+  it('returns 0 для unknown model (honest zero, not kimi rates)', () => {
+    expect(computeCostUsd('unknown/model', { promptTokens: 1000, completionTokens: 500 })).toBe(0);
+  });
+
+  it('returns correct cost для kimi-k2', () => {
+    // 1M prompt @ $0.4/M + 1M completion @ $0.8/M = $1.2
+    expect(
+      computeCostUsd('moonshotai/kimi-k2', {
+        promptTokens: 1_000_000,
+        completionTokens: 1_000_000,
+      })
+    ).toBeCloseTo(1.2, 5);
+  });
+
+  it('returns 0 если usage undefined', () => {
+    expect(computeCostUsd('moonshotai/kimi-k2', undefined)).toBe(0);
   });
 });

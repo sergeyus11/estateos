@@ -64,7 +64,22 @@ export interface LLMChatResult {
 }
 
 /**
- * Universal chat completion. Pass either `model` or `task` (task is resolved via getModelForTask).
+ * Universal chat completion.
+ *
+ * Model resolution:
+ * - If `opts.model` is provided, it takes precedence (explicit override).
+ * - Otherwise, `getModelForTask(opts.task ?? 'extract')` resolves the model from LLM_MODEL* env vars.
+ *
+ * Pass `model` for explicit one-off overrides (e.g. testing).
+ * Pass `task` for env-driven resolution (production code path).
+ *
+ * Provider routing:
+ * - `moonshotai/*` models get `provider: { order: ['Novita'], allow_fallbacks: false }` (kimi quirk).
+ * - Other models use OpenRouter default routing.
+ *
+ * Response format:
+ * - `responseFormat='json_object'` adds `response_format: { type: 'json_object' }` for non-kimi models.
+ * - For kimi (which doesn't support json_object) this option is silently ignored.
  */
 export async function llmChat(
   systemPrompt: string,

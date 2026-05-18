@@ -164,18 +164,22 @@ ${emptyHint}
 Верни ТОЛЬКО сам текст нарратива, без префиксов, без кавычек, без «Вот нарратив:».`;
 }
 
+// TODO(C9): move PRICING + computeCostUsd to openrouter.ts when morningBrief.ts is split out
 const PRICING: Record<string, { in: number; out: number }> = {
   'moonshotai/kimi-k2': { in: 0.4, out: 0.8 },
   'google/gemini-2.5-flash-lite': { in: 0.10, out: 0.40 },
   'google/gemini-2.5-flash': { in: 0.30, out: 2.50 },
 };
 
-function computeCostUsd(
+export function computeCostUsd(
   model: string,
   usage: { promptTokens: number; completionTokens: number } | undefined
 ): number {
   if (!usage) return 0;
-  const price = PRICING[model] ?? PRICING['moonshotai/kimi-k2'];
+  const price = PRICING[model] ?? { in: 0, out: 0 };
+  if (!PRICING[model]) {
+    console.warn(`[morningNarrator] No PRICING for model "${model}", reporting cost as 0`);
+  }
   return (
     (usage.promptTokens / 1_000_000) * price.in +
     (usage.completionTokens / 1_000_000) * price.out
