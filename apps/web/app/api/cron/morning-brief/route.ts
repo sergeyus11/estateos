@@ -13,22 +13,11 @@ import { and, asc, desc, eq, gte, inArray, lt, ne } from 'drizzle-orm';
 import { generateMorningBrief, synthesize } from '@estateos/ai';
 import { saveNarrativeAudio } from '@/lib/audio-storage';
 import { sendPushToUser } from '@/lib/push';
+import { mskDayBounds } from '@/lib/time';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
-
-function mskDayBounds() {
-  const now = new Date();
-  const mskOffset = 3 * 60 * 60 * 1000;
-  const mskNow = new Date(now.getTime() + mskOffset);
-  const todayStr = `${mskNow.getUTCFullYear()}-${String(mskNow.getUTCMonth() + 1).padStart(2, '0')}-${String(mskNow.getUTCDate()).padStart(2, '0')}`;
-  const mskStart = new Date(
-    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) - mskOffset
-  );
-  const mskEnd = new Date(mskStart.getTime() + 24 * 60 * 60 * 1000);
-  return { todayStr, mskStart, mskEnd };
-}
 
 function formatMskTime(date: Date): string {
   return date.toLocaleTimeString('ru-RU', {

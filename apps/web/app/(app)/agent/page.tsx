@@ -1,21 +1,11 @@
 import { and, asc, eq, gte, lt, ne } from 'drizzle-orm';
 import { agendaEvents, clients, db, morningNarratives, objects } from '@estateos/db';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
+import { mskDayBounds } from '@/lib/time';
 import { TodayHome } from './TodayHome';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function mskDayBounds() {
-  const now = new Date();
-  const mskOffset = 3 * 60 * 60 * 1000;
-  const mskNow = new Date(now.getTime() + mskOffset);
-  const mskStart = new Date(
-    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) - mskOffset
-  );
-  const mskEnd = new Date(mskStart.getTime() + 24 * 60 * 60 * 1000);
-  return { now, mskStart, mskEnd };
-}
 
 export default async function AgentPage({
   searchParams,
