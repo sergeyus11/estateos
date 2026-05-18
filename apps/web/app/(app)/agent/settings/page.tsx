@@ -25,6 +25,7 @@ export default function AgentSettingsPage() {
   const [briefAt, setBriefAt] = useState('08:30');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const today = useMemo(() => todayIsoDate(), []);
   const isDayOff = dayOffDate === today;
 
@@ -48,6 +49,7 @@ export default function AgentSettingsPage() {
   async function patch(updates: { dayOffDate?: string | null; briefAt?: string }) {
     setSaving(true);
     setSaved(false);
+    setError(null);
 
     try {
       const res = await fetch('/api/agent/settings', {
@@ -56,13 +58,19 @@ export default function AgentSettingsPage() {
         body: JSON.stringify(updates),
       });
 
-      if (!res.ok) return;
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body.error ?? 'Не удалось сохранить настройки');
+        return;
+      }
 
       const data = (await res.json()) as AgentSettingsResponse;
       setDayOffDate(data.dayOffDate ?? null);
       setBriefAt(data.briefAt ?? '08:30');
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      setError('Сеть недоступна, попробуй ещё раз');
     } finally {
       setSaving(false);
     }
@@ -159,6 +167,19 @@ export default function AgentSettingsPage() {
         {saved && (
           <div style={{ color: 'var(--success)', fontSize: 14, textAlign: 'center' }}>
             Сохранено
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            background: '#FBE8E8',
+            color: '#8a4949',
+            padding: '8px 12px',
+            borderRadius: 10,
+            fontSize: 12,
+            marginTop: 8,
+          }}>
+            {error}
           </div>
         )}
       </section>

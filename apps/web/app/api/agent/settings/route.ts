@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 const DEFAULT_BRIEF_AT = '08:30';
 
 const PatchSchema = z.object({
-  dayOffDate: z.string().nullable().optional(),
+  dayOffDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD').nullable().optional(),
   briefAt: z.string().regex(/^\d{2}:\d{2}$/).optional(),
 });
 
