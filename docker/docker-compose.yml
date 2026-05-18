@@ -18,7 +18,7 @@ services:
       retries: 5
 
   web:
-    image: estateos:phase1ext.1
+    image: estateos:phase1ext-complete
     container_name: estateos_web
     restart: unless-stopped
     extra_hosts:
