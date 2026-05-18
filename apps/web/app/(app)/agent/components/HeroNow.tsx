@@ -19,6 +19,7 @@ function statusLabel(event: AgendaEvent, nowIso: string): string {
   const startsAt = toDate(event.scheduledAt).getTime();
   const endsAt = startsAt + event.durationMin * 60 * 1000;
 
+  if (endsAt < nowMs) return 'Сейчас · завершено';
   if (startsAt <= nowMs && endsAt >= nowMs) return 'Сейчас · идёт';
 
   const minutes = Math.max(0, Math.ceil((startsAt - nowMs) / 60000));

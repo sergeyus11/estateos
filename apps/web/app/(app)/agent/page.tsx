@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, lt } from 'drizzle-orm';
+import { and, asc, eq, gte, lt, ne } from 'drizzle-orm';
 import { agendaEvents, clients, db, objects } from '@estateos/db';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
 import { TodayHome } from './TodayHome';
@@ -35,13 +35,20 @@ export default async function AgentPage() {
       objectTitle: objects.title,
     })
     .from(agendaEvents)
-    .leftJoin(clients, eq(agendaEvents.clientId, clients.id))
-    .leftJoin(objects, eq(agendaEvents.objectId, objects.id))
+    .leftJoin(
+      clients,
+      and(eq(agendaEvents.clientId, clients.id), eq(clients.organizationId, user.organizationId))
+    )
+    .leftJoin(
+      objects,
+      and(eq(agendaEvents.objectId, objects.id), eq(objects.organizationId, user.organizationId))
+    )
     .where(
       and(
         eq(agendaEvents.agentId, user.id),
         gte(agendaEvents.scheduledAt, mskStart),
-        lt(agendaEvents.scheduledAt, mskEnd)
+        lt(agendaEvents.scheduledAt, mskEnd),
+        ne(agendaEvents.status, 'cancelled')
       )
     )
     .orderBy(asc(agendaEvents.scheduledAt));
