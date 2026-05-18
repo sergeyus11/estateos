@@ -74,5 +74,10 @@ export default async function InviteConsumer({
     .set({ consumedAt: new Date() })
     .where(eq(magicLinkInvites.id, invite.id));
 
-  redirect(`/login?email=${encodeURIComponent(invite.email)}&autosend=1`);
+  const loginParams = new URLSearchParams({
+    email: invite.email,
+    autosend: '1',
+    role: invite.role,
+  });
+  redirect(`/login?${loginParams.toString()}`);
 }
