@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, pgEnum, jsonb, integer, numeric } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, pgEnum, jsonb, integer, numeric, index, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const userRole = pgEnum('user_role', ['admin', 'agent']);
@@ -96,7 +96,12 @@ export const showReports = pgTable('show_reports', {
     .notNull()
     .default(sql`now()`),
   finalizedAt: timestamp('finalized_at', { withTimezone: true }),
-});
+  eventId: text('event_id').references((): AnyPgColumn => agendaEvents.id, { onDelete: 'set null' }),
+  clientId: text('client_id').references(() => clients.id, { onDelete: 'set null' }),
+}, (t) => ({
+  eventIdx: index('show_reports_event_id_idx').on(t.eventId),
+  clientIdx: index('show_reports_client_id_idx').on(t.clientId),
+}));
 
 export const reminderLog = pgTable('reminder_log', {
   id: text('id').primaryKey(),
@@ -288,6 +293,94 @@ export const morningNarratives = pgTable('morning_narratives', {
     .default(sql`now()`),
 });
 
+// ============================================================
+// Phase 1 Ext (2026-05-18) — Voice-Native Day Navigator
+// ============================================================
+
+export const clientStatus = pgEnum('client_status', [
+  'new', 'active', 'thinking', 'negotiating', 'closed_won', 'closed_lost',
+]);
+
+export const clients = pgTable('clients', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id').notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  createdByUserId: text('created_by_user_id').notNull()
+    .references(() => users.id),
+  name: text('name').notNull(),
+  phone: text('phone'),
+  telegram: text('telegram'),
+  email: text('email'),
+  budgetMin: numeric('budget_min'),
+  budgetMax: numeric('budget_max'),
+  preferences: jsonb('preferences').notNull().default(sql`'[]'::jsonb`),
+  aiSummary: text('ai_summary'),
+  aiSummaryUpdatedAt: timestamp('ai_summary_updated_at', { withTimezone: true }),
+  status: clientStatus('status').notNull().default('new'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`now()`),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
+}, (t) => ({
+  orgIdx: index('clients_org_idx').on(t.organizationId),
+  agentIdx: index('clients_agent_idx').on(t.createdByUserId),
+  statusIdx: index('clients_status_idx').on(t.status),
+}));
+
+export const propertyType = pgEnum('property_type', ['flat', 'commercial', 'house', 'land']);
+export const objectStatus = pgEnum('object_status', ['active', 'reserved', 'sold', 'withdrawn']);
+
+export const objects = pgTable('objects', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id').notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  createdByUserId: text('created_by_user_id').notNull()
+    .references(() => users.id),
+  title: text('title').notNull(),
+  address: text('address').notNull(),
+  price: numeric('price'),
+  propertyType: propertyType('property_type').notNull(),
+  rooms: integer('rooms'),
+  area: numeric('area'),
+  photos: jsonb('photos').notNull().default(sql`'[]'::jsonb`),
+  ownerName: text('owner_name'),
+  ownerPhone: text('owner_phone'),
+  status: objectStatus('status').notNull().default('active'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`now()`),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
+}, (t) => ({
+  orgIdx: index('objects_org_idx').on(t.organizationId),
+  statusIdx: index('objects_status_idx').on(t.status),
+  typeIdx: index('objects_type_idx').on(t.propertyType),
+}));
+
+export const eventType = pgEnum('event_type', ['showing', 'meeting', 'call', 'task']);
+export const eventStatus = pgEnum('event_status', ['planned', 'in_progress', 'done', 'cancelled']);
+export const eventSource = pgEnum('event_source', ['manual', 'voice', 'auto_from_report', 'backfill']);
+
+export const agendaEvents = pgTable('agenda_events', {
+  id: text('id').primaryKey(),
+  organizationId: text('organization_id').notNull()
+    .references(() => organizations.id, { onDelete: 'cascade' }),
+  agentId: text('agent_id').notNull().references(() => users.id),
+  eventType: eventType('event_type').notNull(),
+  title: text('title').notNull(),
+  scheduledAt: timestamp('scheduled_at', { withTimezone: true }).notNull(),
+  durationMin: integer('duration_min').notNull().default(30),
+  clientId: text('client_id').references(() => clients.id, { onDelete: 'set null' }),
+  objectId: text('object_id').references(() => objects.id, { onDelete: 'set null' }),
+  address: text('address'),
+  status: eventStatus('status').notNull().default('planned'),
+  reportId: text('report_id').references((): AnyPgColumn => showReports.id, { onDelete: 'set null' }),
+  notes: text('notes'),
+  source: eventSource('source').notNull().default('manual'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`now()`),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`now()`),
+}, (t) => ({
+  agentScheduledIdx: index('agenda_agent_scheduled_idx').on(t.agentId, t.scheduledAt),
+  orgIdx: index('agenda_org_idx').on(t.organizationId),
+  statusIdx: index('agenda_status_idx').on(t.status),
+  clientIdx: index('agenda_client_idx').on(t.clientId),
+}));
+
 export type MorningNarrative = typeof morningNarratives.$inferSelect;
 export type NewMorningNarrative = typeof morningNarratives.$inferInsert;
 
@@ -300,3 +393,9 @@ export type MagicLinkInvite = typeof magicLinkInvites.$inferSelect;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type TrainingPersona = typeof trainingPersonas.$inferSelect;
 export type TrainingSession = typeof trainingSessions.$inferSelect;
+export type Client = typeof clients.$inferSelect;
+export type NewClient = typeof clients.$inferInsert;
+export type AgendaEvent = typeof agendaEvents.$inferSelect;
+export type NewAgendaEvent = typeof agendaEvents.$inferInsert;
+export type EstateObject = typeof objects.$inferSelect;
+export type NewEstateObject = typeof objects.$inferInsert;
