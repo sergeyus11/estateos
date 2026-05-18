@@ -1,5 +1,5 @@
-import { db, showReports, users, morningNarratives } from '@estateos/db';
-import { eq, gte, and, desc, sql as drizzleSql } from 'drizzle-orm';
+import { agendaEvents, db, morningNarratives, showReports, users } from '@estateos/db';
+import { and, count, desc, eq, gte, lt, sql as drizzleSql } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth-server';
 import Link from 'next/link';
 import { LiveClock, LocalTimezoneLabel, MoscowTimeBadge } from './LiveClock';
@@ -8,17 +8,23 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminHome() {
   const admin = await requireAdmin();
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
   const weekStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const mskOffset = 3 * 60 * 60 * 1000;
+  const mskNow = new Date(new Date().getTime() + mskOffset);
+  const mskStart = new Date(
+    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) - mskOffset
+  );
+  const mskEnd = new Date(mskStart.getTime() + 24 * 60 * 60 * 1000);
 
   const [{ todayCount }] = await db
-    .select({ todayCount: drizzleSql<number>`count(*)::int` })
-    .from(showReports)
+    .select({ todayCount: count() })
+    .from(agendaEvents)
     .where(
       and(
-        eq(showReports.organizationId, admin.organizationId),
-        gte(showReports.createdAt, todayStart)
+        eq(agendaEvents.organizationId, admin.organizationId),
+        eq(agendaEvents.eventType, 'showing'),
+        gte(agendaEvents.scheduledAt, mskStart),
+        lt(agendaEvents.scheduledAt, mskEnd)
       )
     );
 

@@ -1,35 +1,57 @@
-import { headers } from 'next/headers';
-import { db, showReports, users } from '@estateos/db';
-import { eq, desc } from 'drizzle-orm';
-import { auth } from '@estateos/auth';
-import { redirect } from 'next/navigation';
-import { AgentHome } from './AgentHome';
+import { and, asc, eq, gte, lt, ne } from 'drizzle-orm';
+import { agendaEvents, clients, db, objects } from '@estateos/db';
+import { requireAgentOrAdmin } from '@/lib/auth-server';
+import { TodayHome } from './TodayHome';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export default async function AgentPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect('/login');
-  const [user] = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
-  if (!user) redirect('/login');
-
-  const recent = await db
-    .select()
-    .from(showReports)
-    .where(eq(showReports.agentId, user.id))
-    .orderBy(desc(showReports.createdAt))
-    .limit(5);
-
-  return (
-    <AgentHome
-      firstName={user.firstName}
-      recent={recent.map((r) => ({
-        id: r.id,
-        fields: r.fields,
-        status: r.status,
-        followUpQuestion: r.followUpQuestion,
-        createdAt: r.createdAt.toISOString(),
-      }))}
-    />
+function mskDayBounds() {
+  const now = new Date();
+  const mskOffset = 3 * 60 * 60 * 1000;
+  const mskNow = new Date(now.getTime() + mskOffset);
+  const mskStart = new Date(
+    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) - mskOffset
   );
+  const mskEnd = new Date(mskStart.getTime() + 24 * 60 * 60 * 1000);
+  return { now, mskStart, mskEnd };
+}
+
+export default async function AgentPage() {
+  let user;
+  try {
+    user = await requireAgentOrAdmin();
+  } catch (e) {
+    if (e instanceof Response) throw e;
+    return null;
+  }
+
+  const { now, mskStart, mskEnd } = mskDayBounds();
+
+  const events = await db
+    .select({
+      e: agendaEvents,
+      clientName: clients.name,
+      objectTitle: objects.title,
+    })
+    .from(agendaEvents)
+    .leftJoin(
+      clients,
+      and(eq(agendaEvents.clientId, clients.id), eq(clients.organizationId, user.organizationId))
+    )
+    .leftJoin(
+      objects,
+      and(eq(agendaEvents.objectId, objects.id), eq(objects.organizationId, user.organizationId))
+    )
+    .where(
+      and(
+        eq(agendaEvents.agentId, user.id),
+        gte(agendaEvents.scheduledAt, mskStart),
+        lt(agendaEvents.scheduledAt, mskEnd),
+        ne(agendaEvents.status, 'cancelled')
+      )
+    )
+    .orderBy(asc(agendaEvents.scheduledAt));
+
+  return <TodayHome events={events} nowIso={now.toISOString()} />;
 }
