@@ -1,4 +1,5 @@
 import { llmChat, extractJSON } from './openrouter';
+import { EXTRACT_PROMPTS } from './prompts/extractByEventType';
 
 export type ReportFields = {
   object: string | null;
@@ -45,4 +46,20 @@ export async function extractFields(transcript: string): Promise<ExtractionResul
     (k) => fields[k] === null || fields[k] === ''
   );
   return { fields, missing };
+}
+
+export type EventType = 'showing' | 'meeting' | 'call' | 'task';
+
+export async function extractFieldsByEventType<T extends Record<string, unknown>>(
+  transcript: string,
+  eventType: EventType,
+): Promise<T> {
+  const systemPrompt = EXTRACT_PROMPTS[eventType];
+  const { text: raw } = await llmChat(systemPrompt, `Расшифровка:\n${transcript}`, {
+    task: 'extract',
+    temperature: 0.2,
+    maxTokens: 500,
+    responseFormat: 'json_object',
+  });
+  return (extractJSON<T>(raw) ?? {}) as T;
 }

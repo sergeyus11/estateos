@@ -10,5 +10,6 @@ export * from './morningNarrator';
 export * from './summarizeClient';
 export * from './parseEventCommand';
 export * from './morningBrief';
+export * from './prompts/extractByEventType';
 
-export const AI_PACKAGE_VERSION = '0.4.0-phase2-c9';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2-c8';

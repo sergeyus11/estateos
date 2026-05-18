@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, showReports } from '@estateos/db';
+import { db, showReports, agendaEvents } from '@estateos/db';
 import { eq, and } from 'drizzle-orm';
 import { requireAdmin, requireAgentOrAdmin } from '@/lib/auth-server';
 
@@ -84,6 +84,18 @@ export async function PATCH(
       method: 'POST',
       headers: { Cookie: req.headers.get('cookie') ?? '' },
     }).catch((e) => console.error('resummarize trigger failed:', e));
+  }
+
+  if (body.status === 'final' && updated?.eventId) {
+    await db
+      .update(agendaEvents)
+      .set({ status: 'done', updatedAt: new Date() })
+      .where(
+        and(
+          eq(agendaEvents.id, updated.eventId),
+          eq(agendaEvents.organizationId, user.organizationId)
+        )
+      );
   }
 
   return NextResponse.json(updated);

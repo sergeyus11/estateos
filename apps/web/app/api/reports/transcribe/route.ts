@@ -1,12 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
-import { db, showReports } from '@estateos/db';
-import { transcribe, extractFields, generateFollowUpQuestion } from '@estateos/ai';
+import { and, eq } from 'drizzle-orm';
+import { db, showReports, agendaEvents } from '@estateos/db';
+import {
+  transcribe,
+  extractFields,
+  extractFieldsByEventType,
+  generateFollowUpQuestion,
+} from '@estateos/ai';
+import type { EventType, ReportFields } from '@estateos/ai';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
 import { saveAudio } from '@/lib/audio-storage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const VALID_EVENT_TYPES: EventType[] = ['showing', 'meeting', 'call', 'task'];
+const SHOWING_FIELD_KEYS: Array<keyof ReportFields> = [
+  'object',
+  'client',
+  'budget',
+  'reaction',
+  'nextStep',
+];
 
 export async function POST(req: NextRequest) {
   let user;
@@ -29,6 +45,36 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ error: 'audio file required' }, { status: 400 });
   }
+  const eventIdRaw = form.get('event_id') as string | null;
+  const eventTypeRaw = form.get('event_type') as string | null;
+  const eventType =
+    eventTypeRaw && VALID_EVENT_TYPES.includes(eventTypeRaw as EventType)
+      ? (eventTypeRaw as EventType)
+      : null;
+
+  let resolvedEventId: string | null = null;
+  let resolvedClientId: string | null = null;
+  if (eventIdRaw) {
+    const baseConditions = [
+      eq(agendaEvents.id, eventIdRaw),
+      eq(agendaEvents.organizationId, user.organizationId),
+    ];
+    const conditions =
+      user.role === 'admin'
+        ? baseConditions
+        : [...baseConditions, eq(agendaEvents.agentId, user.id)];
+    const [evRow] = await db
+      .select({ clientId: agendaEvents.clientId })
+      .from(agendaEvents)
+      .where(and(...conditions))
+      .limit(1);
+
+    if (!evRow) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+    }
+    resolvedEventId = eventIdRaw;
+    resolvedClientId = evRow.clientId ?? null;
+  }
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const mimeType = file.type || 'audio/webm';
@@ -36,7 +82,20 @@ export async function POST(req: NextRequest) {
   try {
     const audioUrl = await saveAudio(buffer, mimeType);
     const { transcript } = await transcribe(buffer, mimeType);
-    const { fields, missing } = await extractFields(transcript);
+    let fields: ReportFields;
+    let missing: Array<keyof ReportFields>;
+    if (eventType) {
+      const extracted = await extractFieldsByEventType<Record<string, unknown>>(transcript, eventType);
+      fields = extracted as unknown as ReportFields;
+      missing =
+        eventType === 'showing'
+          ? SHOWING_FIELD_KEYS.filter((k) => fields[k] === null || fields[k] === undefined || fields[k] === '')
+          : [];
+    } else {
+      const result = await extractFields(transcript);
+      fields = result.fields;
+      missing = result.missing;
+    }
     const followUpQ =
       missing.length > 0
         ? await generateFollowUpQuestion(fields, missing)
@@ -55,8 +114,22 @@ export async function POST(req: NextRequest) {
         rounds: [],
         followUpQuestion: followUpQ,
         status: 'draft',
+        eventId: resolvedEventId ?? undefined,
+        clientId: resolvedClientId ?? undefined,
       })
       .returning();
+
+    if (resolvedEventId) {
+      await db
+        .update(agendaEvents)
+        .set({ status: 'in_progress', reportId: report.id, updatedAt: new Date() })
+        .where(
+          and(
+            eq(agendaEvents.id, resolvedEventId),
+            eq(agendaEvents.organizationId, user.organizationId)
+          )
+        );
+    }
 
     return NextResponse.json({
       id: report.id,
