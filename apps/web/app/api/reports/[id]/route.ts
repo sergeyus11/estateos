@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, showReports, agendaEvents } from '@estateos/db';
 import { eq, and } from 'drizzle-orm';
 import { requireAdmin, requireAgentOrAdmin } from '@/lib/auth-server';
+import { z } from 'zod';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const PatchReportSchema = z.object({
+  fields: z.record(z.union([z.string(), z.boolean(), z.null()])).optional(),
+  contactType: z.enum(['showing', 'whatsapp', 'phone', 'other']).optional(),
+  status: z.literal('final').optional(),
+});
 
 export async function GET(
   _req: NextRequest,
@@ -47,11 +54,13 @@ export async function PATCH(
       : NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { id } = await params;
-  const body = (await req.json()) as {
-    fields?: Partial<typeof showReports.$inferSelect.fields>;
-    contactType?: 'showing' | 'whatsapp' | 'phone' | 'other';
-    status?: 'draft' | 'final';
-  };
+  let body: z.infer<typeof PatchReportSchema>;
+  try {
+    const raw = await req.json();
+    body = PatchReportSchema.parse(raw);
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
   const [report] = await db
     .select()
     .from(showReports)

@@ -26,7 +26,7 @@ export default async function TeamPage() {
   const team = await db
     .select()
     .from(users)
-    .where(eq(users.organizationId, admin.organizationId))
+    .where(and(eq(users.organizationId, admin.organizationId), eq(users.role, 'agent')))
     .orderBy(desc(users.createdAt));
   const pending = await db
     .select()
