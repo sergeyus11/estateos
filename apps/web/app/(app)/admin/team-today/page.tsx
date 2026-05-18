@@ -1,6 +1,7 @@
 import { and, asc, eq, gte, lt } from 'drizzle-orm';
 import { agentSettings, agendaEvents, db, users } from '@estateos/db';
 import { requireAdmin } from '@/lib/auth-server';
+import { mskDayBounds } from '@/lib/time';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,18 +21,6 @@ const STATUS_COLOR: Record<EventStatus, string> = {
   done: 'var(--success)',
   cancelled: '#C46B82',
 };
-
-function mskDayBounds(now = new Date()) {
-  const mskOffset = 3 * 60 * 60 * 1000;
-  const mskNow = new Date(now.getTime() + mskOffset);
-  const start = new Date(
-    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) -
-      mskOffset
-  );
-  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-  const today = new Date(start.getTime() + mskOffset).toISOString().slice(0, 10);
-  return { start, end, today };
-}
 
 function initials(s?: string | null): string {
   if (!s) return '·';
@@ -55,7 +44,7 @@ function formatTime(date: Date) {
 
 export default async function TeamTodayPage() {
   const admin = await requireAdmin();
-  const { start, end, today } = mskDayBounds();
+  const { mskStart: start, mskEnd: end, todayStr: today } = mskDayBounds();
 
   const [agents, events, settings] = await Promise.all([
     db

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, objects } from '@estateos/db';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
-import { saveObjectPhoto } from '@/lib/audio-storage';
+import { deleteObjectPhotoFile, saveObjectPhoto } from '@/lib/audio-storage';
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -51,7 +51,7 @@ export async function POST(
 
   const { id } = await params;
   const [object] = await db
-    .select()
+    .select({ photos: objects.photos })
     .from(objects)
     .where(
       and(
@@ -65,8 +65,8 @@ export async function POST(
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const currentPhotos = Array.isArray(object.photos) ? (object.photos as string[]) : [];
-  if (currentPhotos.length >= MAX_PHOTOS_PER_OBJECT) {
+  const currentLength = Array.isArray(object.photos) ? (object.photos as string[]).length : 0;
+  if (currentLength >= MAX_PHOTOS_PER_OBJECT) {
     return NextResponse.json({ error: 'Max 10 photos' }, { status: 400 });
   }
 
@@ -78,11 +78,39 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to save photo' }, { status: 500 });
   }
 
-  const photos = [...currentPhotos, url];
-  await db
-    .update(objects)
-    .set({ photos, updatedAt: new Date() })
-    .where(and(eq(objects.id, id), eq(objects.organizationId, user.organizationId)));
+  // Keep the cap check and append in one SQL UPDATE. Postgres row-level locking
+  // rechecks this WHERE clause under concurrent uploads, so losers do not
+  // overwrite photos added by another request.
+  let result: { photos: unknown }[];
+  try {
+    result = await db
+      .update(objects)
+      .set({
+        photos: sql`${objects.photos} || ${JSON.stringify([url])}::jsonb`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(objects.id, id),
+          eq(objects.organizationId, user.organizationId),
+          sql`jsonb_array_length(${objects.photos}) < ${MAX_PHOTOS_PER_OBJECT}`
+        )
+      )
+      .returning({ photos: objects.photos });
+  } catch (e) {
+    console.error('[photos] UPDATE failed', e);
+    await deleteObjectPhotoFile(url).catch((cleanupErr) => {
+      console.error('[photos] orphan cleanup failed after UPDATE error', cleanupErr);
+    });
+    return NextResponse.json({ error: 'Failed to save photo' }, { status: 500 });
+  }
 
-  return NextResponse.json({ url, photos });
+  if (result.length === 0) {
+    await deleteObjectPhotoFile(url).catch((e) => {
+      console.error('[photos] orphan cleanup failed', e);
+    });
+    return NextResponse.json({ error: 'Max 10 photos' }, { status: 409 });
+  }
+
+  return NextResponse.json({ url, photos: result[0].photos as string[] });
 }
