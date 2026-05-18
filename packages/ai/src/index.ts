@@ -8,5 +8,6 @@ export * from './personaDialog';
 export * from './spinAnalyzer';
 export * from './morningNarrator';
 export * from './summarizeClient';
+export * from './parseEventCommand';
 
-export const AI_PACKAGE_VERSION = '0.4.0-phase2-c4';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2-c6';
