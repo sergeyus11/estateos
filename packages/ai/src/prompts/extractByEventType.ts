@@ -18,8 +18,9 @@ export const EXTRACT_PROMPTS: Record<'showing' | 'meeting' | 'call' | 'task', st
 - result: результат
 Формат: JSON {topic, result}.`,
 
-  task: `Извлеки из расшифровки задачи 2 поля:
+  task: `Извлеки из расшифровки задачи 3 поля:
 - summary: что сделано или что нужно
-- followUp: нужен ли follow-up (true/false) и какой
-Формат: JSON {summary, followUp}.`,
+- followUpNeeded: true/false — нужен ли follow-up
+- followUpNote: string или null — что именно сделать (если followUpNeeded=true, иначе null)
+Формат: JSON {summary, followUpNeeded, followUpNote}.`,
 };

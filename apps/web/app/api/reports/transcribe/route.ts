@@ -8,7 +8,7 @@ import {
   extractFieldsByEventType,
   generateFollowUpQuestion,
 } from '@estateos/ai';
-import type { EventType, ReportFields } from '@estateos/ai';
+import type { DynamicReportFields, EventType, ReportFields } from '@estateos/ai';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
 import { saveAudio } from '@/lib/audio-storage';
 
@@ -82,23 +82,37 @@ export async function POST(req: NextRequest) {
   try {
     const audioUrl = await saveAudio(buffer, mimeType);
     const { transcript } = await transcribe(buffer, mimeType);
-    let fields: ReportFields;
+    let fields: ReportFields | DynamicReportFields;
     let missing: Array<keyof ReportFields>;
+    let fieldsForFollowUp: ReportFields | null = null;
     if (eventType) {
-      const extracted = await extractFieldsByEventType<Record<string, unknown>>(transcript, eventType);
-      fields = extracted as unknown as ReportFields;
-      missing =
-        eventType === 'showing'
-          ? SHOWING_FIELD_KEYS.filter((k) => fields[k] === null || fields[k] === undefined || fields[k] === '')
-          : [];
+      const extracted = await extractFieldsByEventType<DynamicReportFields>(
+        transcript,
+        eventType
+      );
+      fields = extracted ?? {};
+      if (eventType === 'showing') {
+        const showingFields = fields as ReportFields;
+        fieldsForFollowUp = showingFields;
+        missing = SHOWING_FIELD_KEYS.filter(
+          (k) =>
+            showingFields[k] === null ||
+            showingFields[k] === undefined ||
+            showingFields[k] === ''
+        );
+      } else {
+        // Meeting/call/task have simpler 2-3 field schemas, no round-trip needed.
+        missing = [];
+      }
     } else {
       const result = await extractFields(transcript);
       fields = result.fields;
       missing = result.missing;
+      fieldsForFollowUp = result.fields;
     }
     const followUpQ =
-      missing.length > 0
-        ? await generateFollowUpQuestion(fields, missing)
+      missing.length > 0 && fieldsForFollowUp
+        ? await generateFollowUpQuestion(fieldsForFollowUp, missing)
         : null;
 
     const reportId = nanoid(16);

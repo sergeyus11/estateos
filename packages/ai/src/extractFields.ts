@@ -50,6 +50,8 @@ export async function extractFields(transcript: string): Promise<ExtractionResul
 
 export type EventType = 'showing' | 'meeting' | 'call' | 'task';
 
+export type DynamicReportFields = Record<string, string | boolean | null>;
+
 export async function extractFieldsByEventType<T extends Record<string, unknown>>(
   transcript: string,
   eventType: EventType,
