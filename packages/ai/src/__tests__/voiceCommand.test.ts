@@ -75,6 +75,11 @@ describe('classifyVoiceCommand', () => {
       entity: 'objects',
       filterText: 'Чкалова',
     },
+    // NB: 'events' entity was removed from the voiceCommand prompt in review-fix iter 1
+    // (see prompts/voiceCommand.ts). This test verifies that the classifier can still
+    // pass through 'events' from raw LLM JSON, but the route.ts searchEntities returns
+    // [] for it (no events search implementation). If 'events' search is added later,
+    // re-enable this case as a proper integration test.
     {
       transcript: 'найди события на завтра',
       entity: 'events',

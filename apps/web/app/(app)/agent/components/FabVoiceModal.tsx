@@ -162,6 +162,7 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
     if (voiceResult.entity === 'objects') {
       router.push(`/agent/objects/${result.id}`);
       onClose();
+      return;
     }
   }
 
