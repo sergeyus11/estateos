@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { MicRecorder } from './MicRecorder';
 
 type ParsedEventPreview = {
@@ -66,10 +66,19 @@ function getObjectLabel(match: ParsedEventPreview['object_match']): string | nul
 
 function getModalTitle(result: VoiceResult | null): string {
   if (!result) return 'Голосовое событие';
-  if (result.intent === 'search') return 'Найдено';
+  if (result.intent === 'search') return 'Поиск';
   if (result.intent === 'generic') return 'Ответ';
   if (result.intent === 'send_template') return 'Шаблон';
   return 'Голосовое событие';
+}
+
+function getCurrentScreen(path: string): string {
+  if (path === '/agent' || path === '/agent/') return 'agent_home';
+  if (path.startsWith('/agent/event/')) return 'event_detail';
+  if (path.startsWith('/agent/clients')) return 'clients';
+  if (path.startsWith('/agent/objects')) return 'objects';
+  if (path.startsWith('/agent/settings')) return 'settings';
+  return 'other';
 }
 
 function getRetryLabel(result: VoiceResult): string {
@@ -86,13 +95,14 @@ function stringifyDraftClient(client: unknown): string {
 
 export function FabVoiceModal({ onClose, onEventCreated }: Props) {
   const router = useRouter();
+  const pathname = usePathname() ?? '';
   const [voiceResult, setVoiceResult] = useState<VoiceResult | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleUpload(formData: FormData) {
     setError(null);
-    formData.set('current_screen', 'agent_home');
+    formData.set('current_screen', getCurrentScreen(pathname));
     const res = await fetch('/api/voice/command', { method: 'POST', body: formData });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -274,13 +284,13 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
               {voiceResult.intent === 'send_template' && (
                 <div className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4">
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-400">Client</p>
+                    <p className="text-xs font-medium text-gray-400">Клиент</p>
                     <p className="text-sm text-gray-900">
                       {stringifyDraftClient(voiceResult.draft.client)}
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-400">Message</p>
+                    <p className="text-xs font-medium text-gray-400">Сообщение</p>
                     <p className="text-sm text-gray-700">{voiceResult.draft.message}</p>
                   </div>
                   <button

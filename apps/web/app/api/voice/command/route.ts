@@ -17,7 +17,7 @@ async function searchEntities(
 
   if (entity === 'clients') {
     return db
-      .select({ id: clients.id, name: clients.name, phone: clients.phone })
+      .select({ id: clients.id, name: clients.name })
       .from(clients)
       .where(
         and(
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    switch (classification.intent) {
+    switch (classification.intent as string) {
       case 'create_event': {
         const ownClients = await db
           .select({ id: clients.id, name: clients.name })
@@ -162,6 +162,14 @@ export async function POST(req: NextRequest) {
           { task: 'command', temperature: 0.5, maxTokens: 300 },
         );
         return NextResponse.json({ transcript, intent: 'generic', answer });
+      }
+
+      default: {
+        console.warn(`[voice] Unknown intent from LLM: ${classification.intent}`);
+        return NextResponse.json(
+          { transcript, intent: 'unclear', reason: 'Не понял команду, попробуй сказать иначе.' },
+          { status: 200 },
+        );
       }
     }
   } catch (e) {

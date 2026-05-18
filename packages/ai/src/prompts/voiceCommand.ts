@@ -17,7 +17,7 @@ export const VOICE_COMMAND_SYSTEM = `Ты — классификатор гол�
 
 Payload по intent:
 - create_event: { delegate_to: "parseEventCommand" }
-- search: { entity: "clients"|"objects"|"events", filter_text: string }
+- search: { entity: "clients"|"objects", filter_text: string }
 - send_template: { client_name_or_id?: string, template_hint: string }
 - generic: { question: string }`;
 
