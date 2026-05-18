@@ -57,6 +57,12 @@ export interface LLMChatOptions {
   responseFormat?: 'json_object' | 'text';
 }
 
+export interface LLMChatResult {
+  text: string;
+  usage?: { promptTokens: number; completionTokens: number; totalTokens: number };
+  model: string;
+}
+
 /**
  * Universal chat completion. Pass either `model` or `task` (task is resolved via getModelForTask).
  */
@@ -64,7 +70,7 @@ export async function llmChat(
   systemPrompt: string,
   userPrompt: string,
   opts: LLMChatOptions = {},
-): Promise<string> {
+): Promise<LLMChatResult> {
   const model = opts.model ?? getModelForTask(opts.task ?? 'extract');
   const client = getOpenRouterClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,14 +84,24 @@ export async function llmChat(
     max_tokens: opts.maxTokens ?? 1500,
   };
   if (needsNovitaPin(model)) {
-    body.provider = { order: ['novita'] };
+    body.provider = { order: ['Novita'], allow_fallbacks: false };
   }
   if (opts.responseFormat === 'json_object' && !needsNovitaPin(model)) {
     // kimi-k2 does not support json_object — only gemini/openai
     body.response_format = { type: 'json_object' };
   }
   const res = await client.chat.completions.create(body as never);
-  return res.choices[0]?.message?.content ?? '';
+  return {
+    text: res.choices[0]?.message?.content ?? '',
+    usage: res.usage
+      ? {
+          promptTokens: res.usage.prompt_tokens,
+          completionTokens: res.usage.completion_tokens,
+          totalTokens: res.usage.total_tokens,
+        }
+      : undefined,
+    model,
+  };
 }
 
 /**
@@ -96,7 +112,8 @@ export async function kimiChat(
   userPrompt: string,
   opts: { temperature?: number; maxTokens?: number } = {},
 ): Promise<string> {
-  return llmChat(systemPrompt, userPrompt, { ...opts, task: 'extract' });
+  const { text } = await llmChat(systemPrompt, userPrompt, { ...opts, task: 'extract' });
+  return text;
 }
 
 /**

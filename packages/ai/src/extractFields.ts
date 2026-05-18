@@ -28,7 +28,7 @@ const SYSTEM_PROMPT = `Ты — AI-ассистент для агентств н
 Верни ТОЛЬКО валидный JSON, без префиксов и комментариев.`;
 
 export async function extractFields(transcript: string): Promise<ExtractionResult> {
-  const raw = await llmChat(SYSTEM_PROMPT, `Расшифровка:\n${transcript}`, {
+  const { text: raw } = await llmChat(SYSTEM_PROMPT, `Расшифровка:\n${transcript}`, {
     task: 'extract',
     temperature: 0.2,
     maxTokens: 500,

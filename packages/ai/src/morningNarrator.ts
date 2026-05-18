@@ -164,6 +164,24 @@ ${emptyHint}
 Верни ТОЛЬКО сам текст нарратива, без префиксов, без кавычек, без «Вот нарратив:».`;
 }
 
+const PRICING: Record<string, { in: number; out: number }> = {
+  'moonshotai/kimi-k2': { in: 0.4, out: 0.8 },
+  'google/gemini-2.5-flash-lite': { in: 0.10, out: 0.40 },
+  'google/gemini-2.5-flash': { in: 0.30, out: 2.50 },
+};
+
+function computeCostUsd(
+  model: string,
+  usage: { promptTokens: number; completionTokens: number } | undefined
+): number {
+  if (!usage) return 0;
+  const price = PRICING[model] ?? PRICING['moonshotai/kimi-k2'];
+  return (
+    (usage.promptTokens / 1_000_000) * price.in +
+    (usage.completionTokens / 1_000_000) * price.out
+  );
+}
+
 export async function generateMorningNarrative(stats: NarratorStats): Promise<{
   text: string;
   costUsd: number;
@@ -174,11 +192,12 @@ export async function generateMorningNarrative(stats: NarratorStats): Promise<{
 
   const BRIEF_SYSTEM = 'Ты пишешь утренний устный нарратив для совладельца агентства недвижимости. Естественная речь без markdown, плавно перетекающие предложения, без bullet-points. ~290 слов / 2 минуты звучания.';
 
-  const text = await llmChat(BRIEF_SYSTEM, prompt, {
+  const { text, usage, model } = await llmChat(BRIEF_SYSTEM, prompt, {
     task: 'brief',
     temperature: 0.55,
     maxTokens: 900,
   });
+  const costUsd = computeCostUsd(model, usage);
 
-  return { text: text.trim(), costUsd: 0, latencyMs: Date.now() - start };
+  return { text: text.trim(), costUsd, latencyMs: Date.now() - start };
 }

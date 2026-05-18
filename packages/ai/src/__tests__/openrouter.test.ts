@@ -41,7 +41,7 @@ describe('getModelForTask', () => {
 describe('llmChat provider routing (smoke)', () => {
   // Tests check that body for moonshotai/* includes provider pin, and for gemini it does not.
   // Uses minimal mock of OpenAI client.
-  it('moonshotai/kimi-k2 → provider: [novita] pin', async () => {
+  it('moonshotai/kimi-k2 → provider pin', async () => {
     const mockCreate = vi.fn().mockResolvedValue({
       choices: [{ message: { content: 'ok' } }],
     });
@@ -54,7 +54,7 @@ describe('llmChat provider routing (smoke)', () => {
 
     await freshLlmChat('sys', 'user', { model: 'moonshotai/kimi-k2' });
     expect(mockCreate).toHaveBeenLastCalledWith(
-      expect.objectContaining({ provider: { order: ['novita'] } }),
+      expect.objectContaining({ provider: { order: ['Novita'], allow_fallbacks: false } }),
     );
   });
 
@@ -72,5 +72,34 @@ describe('llmChat provider routing (smoke)', () => {
     await freshLlmChat('sys', 'user', { model: 'google/gemini-2.5-flash-lite' });
     const lastCall = mockCreate.mock.lastCall?.[0];
     expect(lastCall).not.toHaveProperty('provider');
+  });
+
+  it('llmChat returns LLMChatResult with usage when API returns usage', async () => {
+    const mockCreate = vi.fn().mockResolvedValue({
+      choices: [{ message: { content: 'ok' } }],
+      usage: {
+        prompt_tokens: 100,
+        completion_tokens: 25,
+        total_tokens: 125,
+      },
+    });
+    vi.doMock('openai', () => ({
+      default: vi.fn(() => ({ chat: { completions: { create: mockCreate } } })),
+    }));
+    vi.resetModules();
+    const { llmChat: freshLlmChat } = await import('../openrouter');
+    process.env.OPENROUTER_API_KEY = 'sk-test';
+
+    await expect(
+      freshLlmChat('sys', 'user', { model: 'google/gemini-2.5-flash-lite' })
+    ).resolves.toEqual({
+      text: 'ok',
+      usage: {
+        promptTokens: 100,
+        completionTokens: 25,
+        totalTokens: 125,
+      },
+      model: 'google/gemini-2.5-flash-lite',
+    });
   });
 });
