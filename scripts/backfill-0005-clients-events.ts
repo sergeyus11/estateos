@@ -3,20 +3,21 @@
  * Idempotent backfill: for each existing show_reports row, create clients (dedupe) + agenda_events.
  * Rerun-safe: skips rows where show_reports.eventId IS NOT NULL.
  *
- * Manual rollback steps (if needed after a bad run):
- *   1. UPDATE show_reports SET event_id = NULL, client_id = NULL WHERE source = 'backfill' (using psql directly)
- *   2. Remove agenda_events rows with source='backfill' (using psql directly)
+ * Manual rollback steps (psql directly):
+ *   1. UPDATE show_reports SET event_id = NULL, client_id = NULL
+ *        WHERE event_id IN (SELECT id FROM agenda_events WHERE source = 'backfill');
+ *   2. DELETE FROM agenda_events WHERE source = 'backfill';
+ *   3. DELETE FROM clients WHERE NOT EXISTS (
+ *        SELECT 1 FROM agenda_events WHERE client_id = clients.id
+ *      ); -- optional, cleans up orphan clients created during backfill
  */
+import { nanoid } from 'nanoid';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import { showReports, clients, agendaEvents } from '@estateos/db';
 
 const DATABASE_URL = process.env.DATABASE_URL ?? 'postgresql://estateos:estateos_dev@localhost:30210/estateos';
-
-function makeId(): string {
-  return crypto.randomUUID().replace(/-/g, '');
-}
 
 async function main() {
   const sqlClient = postgres(DATABASE_URL, { max: 1 });
@@ -35,52 +36,55 @@ async function main() {
       console.warn(`Skip ${report.id}: no client name in fields`);
       continue;
     }
-    const lowered = clientNameRaw.toLowerCase();
-    const existingClient = await db
-      .select()
-      .from(clients)
-      .where(and(
-        eq(clients.organizationId, report.organizationId),
-        sql`lower(${clients.name}) = ${lowered}`,
-      ))
-      .limit(1);
 
-    let clientId: string;
-    if (existingClient.length > 0) {
-      clientId = existingClient[0].id;
-    } else {
-      clientId = makeId();
-      await db.insert(clients).values({
-        id: clientId,
+    await db.transaction(async (tx) => {
+      const lowered = clientNameRaw.toLowerCase();
+      const existingClient = await tx
+        .select()
+        .from(clients)
+        .where(and(
+          eq(clients.organizationId, report.organizationId),
+          sql`lower(${clients.name}) = ${lowered}`,
+        ))
+        .limit(1);
+
+      let clientId: string;
+      if (existingClient.length > 0) {
+        clientId = existingClient[0].id;
+      } else {
+        clientId = nanoid(16);
+        await tx.insert(clients).values({
+          id: clientId,
+          organizationId: report.organizationId,
+          createdByUserId: report.agentId,
+          name: clientNameRaw,
+          status: 'active',
+        });
+        createdClients++;
+      }
+
+      const eventId = nanoid(16);
+      const objectTitle = String(fields.object ?? '').trim() || 'Показ';
+      await tx.insert(agendaEvents).values({
+        id: eventId,
         organizationId: report.organizationId,
-        createdByUserId: report.agentId,
-        name: clientNameRaw,
-        status: 'active',
+        agentId: report.agentId,
+        eventType: 'showing',
+        title: objectTitle,
+        scheduledAt: report.createdAt,
+        durationMin: 60,
+        clientId,
+        address: String(fields.object ?? '') || null,
+        status: 'done',
+        reportId: report.id,
+        source: 'backfill',
+        createdAt: report.createdAt,
+        updatedAt: report.createdAt,
       });
-      createdClients++;
-    }
+      createdEvents++;
 
-    const eventId = makeId();
-    const objectTitle = String(fields.object ?? '').trim() || 'Показ';
-    await db.insert(agendaEvents).values({
-      id: eventId,
-      organizationId: report.organizationId,
-      agentId: report.agentId,
-      eventType: 'showing',
-      title: objectTitle,
-      scheduledAt: report.createdAt,
-      durationMin: 60,
-      clientId,
-      address: String(fields.object ?? '') || null,
-      status: 'done',
-      reportId: report.id,
-      source: 'backfill',
-      createdAt: report.createdAt,
-      updatedAt: report.createdAt,
+      await tx.update(showReports).set({ eventId, clientId }).where(eq(showReports.id, report.id));
     });
-    createdEvents++;
-
-    await db.update(showReports).set({ eventId, clientId }).where(eq(showReports.id, report.id));
   }
 
   console.log(`Created ${createdClients} clients, ${createdEvents} agenda_events`);
