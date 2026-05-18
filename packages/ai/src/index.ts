@@ -9,5 +9,6 @@ export * from './spinAnalyzer';
 export * from './morningNarrator';
 export * from './summarizeClient';
 export * from './parseEventCommand';
+export * from './morningBrief';
 
-export const AI_PACKAGE_VERSION = '0.4.0-phase2-c6';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2-c9';

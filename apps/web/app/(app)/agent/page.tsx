@@ -1,5 +1,5 @@
 import { and, asc, eq, gte, lt, ne } from 'drizzle-orm';
-import { agendaEvents, clients, db, objects } from '@estateos/db';
+import { agendaEvents, clients, db, morningNarratives, objects } from '@estateos/db';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
 import { TodayHome } from './TodayHome';
 
@@ -17,7 +17,11 @@ function mskDayBounds() {
   return { now, mskStart, mskEnd };
 }
 
-export default async function AgentPage() {
+export default async function AgentPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ brief?: string }>;
+}) {
   let user;
   try {
     user = await requireAgentOrAdmin();
@@ -27,6 +31,26 @@ export default async function AgentPage() {
   }
 
   const { now, mskStart, mskEnd } = mskDayBounds();
+  const resolvedSearchParams = await searchParams;
+
+  let briefNarrative: { audioPath: string | null; narrativeText: string | null; id: string } | null = null;
+  if (resolvedSearchParams?.brief) {
+    const [found] = await db
+      .select({
+        id: morningNarratives.id,
+        audioPath: morningNarratives.audioPath,
+        narrativeText: morningNarratives.narrativeText,
+      })
+      .from(morningNarratives)
+      .where(
+        and(
+          eq(morningNarratives.id, resolvedSearchParams.brief),
+          eq(morningNarratives.adminId, user.id)
+        )
+      )
+      .limit(1);
+    briefNarrative = found ?? null;
+  }
 
   const events = await db
     .select({
@@ -53,5 +77,5 @@ export default async function AgentPage() {
     )
     .orderBy(asc(agendaEvents.scheduledAt));
 
-  return <TodayHome events={events} nowIso={now.toISOString()} />;
+  return <TodayHome events={events} nowIso={now.toISOString()} briefNarrative={briefNarrative} />;
 }
