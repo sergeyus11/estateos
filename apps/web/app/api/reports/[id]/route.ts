@@ -78,6 +78,14 @@ export async function PATCH(
     .set(updates)
     .where(eq(showReports.id, id))
     .returning();
+
+  if (body.status === 'final' && updated?.clientId) {
+    fetch(new URL(`/api/clients/${updated.clientId}/resummarize`, req.url), {
+      method: 'POST',
+      headers: { Cookie: req.headers.get('cookie') ?? '' },
+    }).catch((e) => console.error('resummarize trigger failed:', e));
+  }
+
   return NextResponse.json(updated);
 }
 

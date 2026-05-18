@@ -7,5 +7,6 @@ export * from './personas';
 export * from './personaDialog';
 export * from './spinAnalyzer';
 export * from './morningNarrator';
+export * from './summarizeClient';
 
-export const AI_PACKAGE_VERSION = '0.4.0-phase2';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2-c4';
