@@ -70,7 +70,7 @@ browserTest('agent login sends magic-link with /agent callbackURL', async ({ pag
   await expect(page.getByText(/Ссылка отправлена/i)).toBeVisible();
 });
 
-browserTest('plain login sends magic-link with /admin callbackURL', async ({ page }) => {
+browserTest('login without role param sends magic-link with /agent callbackURL (default)', async ({ page }) => {
   let callbackURL: string | undefined;
 
   await page.route('**/api/auth/**', async (route: Route) => {
@@ -83,6 +83,31 @@ browserTest('plain login sends magic-link with /admin callbackURL', async ({ pag
   });
 
   await page.goto('/login');
+  await expect(page.getByRole('heading', { name: /Войти/i })).toBeVisible();
+
+  // Login without role param defaults to the safe agent callback.
+  await page.getByTestId('email-input').fill('agent@example.com');
+  await page.getByTestId('submit').click();
+
+  await expect
+    .poll(() => callbackURL, { message: 'magic-link callbackURL' })
+    .toBe('/agent');
+  await expect(page.getByText(/Ссылка отправлена/i)).toBeVisible();
+});
+
+browserTest('admin login sends magic-link with /admin callbackURL when ?role=admin', async ({ page }) => {
+  let callbackURL: string | undefined;
+
+  await page.route('**/api/auth/**', async (route: Route) => {
+    callbackURL = callbackURLFromPostData(route.request().postData());
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({}),
+    });
+  });
+
+  await page.goto('/login?role=admin');
   await expect(page.getByRole('heading', { name: /Войти/i })).toBeVisible();
 
   await page.getByTestId('email-input').fill('admin@example.com');

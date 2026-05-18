@@ -31,7 +31,7 @@ function LoginContent() {
   const emailFromUrl = params?.get('email') || '';
   const autosend = params?.get('autosend') === '1';
   const roleFromUrl = params?.get('role') || '';
-  const callbackURL = roleFromUrl === 'agent' ? '/agent' : '/admin';
+  const callbackURL = roleFromUrl === 'admin' ? '/admin' : '/agent';
 
   const [email, setEmail] = useState(emailFromUrl);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
