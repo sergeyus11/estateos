@@ -11,5 +11,6 @@ export * from './summarizeClient';
 export * from './parseEventCommand';
 export * from './morningBrief';
 export * from './prompts/extractByEventType';
+export * from './voiceCommand';
 
-export const AI_PACKAGE_VERSION = '0.4.0-phase2-c8';
+export const AI_PACKAGE_VERSION = '0.4.0-phase2-c10';

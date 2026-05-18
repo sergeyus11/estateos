@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { MicRecorder } from './MicRecorder';
 
 type ParsedEventPreview = {
@@ -15,8 +16,13 @@ type ParsedEventPreview = {
   confidence: number;
 };
 
+type SearchResult = { id: string; name?: string; title?: string; address?: string | null };
+
 type VoiceResult =
   | { intent: 'create_event'; transcript: string; preview: ParsedEventPreview }
+  | { intent: 'search'; transcript: string; entity: string; results: SearchResult[] }
+  | { intent: 'send_template'; transcript: string; draft: { client?: unknown; message: string } }
+  | { intent: 'generic'; transcript: string; answer: string }
   | { intent: 'unclear'; transcript: string; reason: string };
 
 type Props = {
@@ -58,13 +64,35 @@ function getObjectLabel(match: ParsedEventPreview['object_match']): string | nul
   return match.suggested_title;
 }
 
+function getModalTitle(result: VoiceResult | null): string {
+  if (!result) return 'Голосовое событие';
+  if (result.intent === 'search') return 'Найдено';
+  if (result.intent === 'generic') return 'Ответ';
+  if (result.intent === 'send_template') return 'Шаблон';
+  return 'Голосовое событие';
+}
+
+function getRetryLabel(result: VoiceResult): string {
+  if (result.intent === 'unclear') return 'Попробовать снова';
+  if (result.intent === 'generic') return 'Спросить снова';
+  return 'Изменить';
+}
+
+function stringifyDraftClient(client: unknown): string {
+  if (typeof client === 'string' && client.trim()) return client;
+  if (typeof client === 'number') return String(client);
+  return 'не указан';
+}
+
 export function FabVoiceModal({ onClose, onEventCreated }: Props) {
+  const router = useRouter();
   const [voiceResult, setVoiceResult] = useState<VoiceResult | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleUpload(formData: FormData) {
     setError(null);
+    formData.set('current_screen', 'agent_home');
     const res = await fetch('/api/voice/command', { method: 'POST', body: formData });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -114,6 +142,21 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
     setError(null);
   }
 
+  function handleSearchResultClick(result: SearchResult) {
+    if (!voiceResult || voiceResult.intent !== 'search') return;
+    if (voiceResult.entity === 'clients') {
+      router.push(`/agent/clients/${result.id}`);
+      onClose();
+      return;
+    }
+    if (voiceResult.entity === 'objects') {
+      router.push(`/agent/objects/${result.id}`);
+      onClose();
+    }
+  }
+
+  const modalTitle = getModalTitle(voiceResult);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center"
@@ -132,7 +175,7 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: 'DM Sans, sans-serif' }}
             >
-              Голосовое событие
+              {modalTitle}
             </h2>
             <button
               type="button"
@@ -147,7 +190,7 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
           {!voiceResult && (
             <div className="space-y-3">
               <p className="text-sm text-gray-500">
-                Скажите: «Поставь показ Иванову завтра в 15 на Чкалова 22»
+                Скажите: «Показ Иванову завтра в 15» или «Покажи клиентов с бюджетом до 10 млн»
               </p>
               <MicRecorder onUpload={handleUpload} buttonLabel="Нажмите и говорите" />
             </div>
@@ -198,6 +241,64 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
                 </div>
               )}
 
+              {voiceResult.intent === 'search' && (
+                <div className="space-y-2">
+                  {voiceResult.results.length > 0 ? (
+                    voiceResult.results.map((result) => {
+                      const label = result.name ?? result.title ?? `#${result.id}`;
+                      const canOpen =
+                        voiceResult.entity === 'clients' || voiceResult.entity === 'objects';
+                      return (
+                        <button
+                          type="button"
+                          key={result.id}
+                          onClick={() => handleSearchResultClick(result)}
+                          disabled={!canOpen}
+                          className="w-full rounded-2xl border border-gray-200 bg-white p-4 text-left transition hover:border-gray-300 disabled:cursor-default disabled:hover:border-gray-200"
+                        >
+                          <p className="text-sm font-semibold text-gray-900">{label}</p>
+                          {result.address && (
+                            <p className="mt-1 text-xs text-gray-500">{result.address}</p>
+                          )}
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                      <p className="text-sm text-gray-600">Ничего не найдено.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {voiceResult.intent === 'send_template' && (
+                <div className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4">
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-400">Client</p>
+                    <p className="text-sm text-gray-900">
+                      {stringifyDraftClient(voiceResult.draft.client)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-400">Message</p>
+                    <p className="text-sm text-gray-700">{voiceResult.draft.message}</p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled
+                    className="w-full rounded-2xl bg-neutral-200 py-3 text-sm font-semibold text-neutral-500"
+                  >
+                    Отправить (скоро)
+                  </button>
+                </div>
+              )}
+
+              {voiceResult.intent === 'generic' && (
+                <div className="rounded-2xl border border-gray-200 bg-white p-4">
+                  <p className="text-sm leading-6 text-gray-800">{voiceResult.answer}</p>
+                </div>
+              )}
+
               {error && <p className="text-sm text-red-600">{error}</p>}
 
               <div className="flex gap-3">
@@ -217,7 +318,7 @@ export function FabVoiceModal({ onClose, onEventCreated }: Props) {
                   onClick={handleRetry}
                   className="flex-1 rounded-2xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-700"
                 >
-                  {voiceResult.intent === 'unclear' ? 'Попробовать снова' : 'Изменить'}
+                  {getRetryLabel(voiceResult)}
                 </button>
                 <button
                   type="button"
