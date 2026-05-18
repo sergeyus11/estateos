@@ -11,7 +11,9 @@ export async function getCurrentUser(): Promise<User | null> {
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
-  return user ?? null;
+  if (!user) return null;
+  if (user.isActive !== true) return null;
+  return user;
 }
 
 export async function requireAdmin(): Promise<User> {
