@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import { db, clients, agendaEvents, showReports } from '@estateos/db';
 import { summarizeClient, type SummarizeClientEvent } from '@estateos/ai';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
@@ -46,37 +46,38 @@ export async function POST(
     .orderBy(desc(agendaEvents.scheduledAt))
     .limit(10);
 
-  const reportsMap = new Map<
-    string,
-    { transcript: string; fields: Record<string, unknown> }
-  >();
-  for (const ev of events) {
-    if (ev.reportId) {
-      const [report] = await db
-        .select()
-        .from(showReports)
-        .where(
-          and(
-            eq(showReports.id, ev.reportId),
-            eq(showReports.organizationId, user.organizationId),
-          ),
-        )
-        .limit(1);
-      if (report) {
-        reportsMap.set(ev.id, {
-          transcript: report.transcript ?? '',
-          fields: (report.fields as Record<string, unknown>) ?? {},
-        });
-      }
-    }
-  }
+  const reportIds = events
+    .map((e) => e.reportId)
+    .filter((id): id is string => id !== null);
+  const reports =
+    reportIds.length > 0
+      ? await db
+          .select()
+          .from(showReports)
+          .where(
+            and(
+              inArray(showReports.id, reportIds),
+              eq(showReports.organizationId, user.organizationId),
+            ),
+          )
+      : [];
+
+  const reportsMap = new Map(
+    reports.map((r) => [
+      r.id,
+      {
+        transcript: r.transcript ?? '',
+        fields: (r.fields as Record<string, unknown>) ?? {},
+      },
+    ]),
+  );
 
   const enrichedEvents: SummarizeClientEvent[] = events.map((event) => ({
     eventType: event.eventType,
     scheduledAt: event.scheduledAt,
     title: event.title,
-    transcript: reportsMap.get(event.id)?.transcript,
-    fields: reportsMap.get(event.id)?.fields,
+    transcript: event.reportId ? reportsMap.get(event.reportId)?.transcript : undefined,
+    fields: event.reportId ? reportsMap.get(event.reportId)?.fields : undefined,
   }));
 
   const result = await summarizeClient(
