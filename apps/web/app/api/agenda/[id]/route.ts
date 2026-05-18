@@ -7,6 +7,11 @@ import { requireAdmin, requireAgentOrAdmin } from '@/lib/auth-server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+function scopeConditions(user: { id: string; organizationId: string; role: string }, id: string) {
+  const base = [eq(agendaEvents.id, id), eq(agendaEvents.organizationId, user.organizationId)];
+  return user.role === 'admin' ? base : [...base, eq(agendaEvents.agentId, user.id)];
+}
+
 const PatchEventSchema = z
   .object({
     status: z.enum(['planned', 'in_progress', 'done', 'cancelled']),
@@ -37,7 +42,7 @@ export async function GET(
   const [event] = await db
     .select()
     .from(agendaEvents)
-    .where(and(eq(agendaEvents.id, id), eq(agendaEvents.organizationId, user.organizationId)))
+    .where(and(...scopeConditions(user, id)))
     .limit(1);
 
   if (!event) {
@@ -90,7 +95,7 @@ export async function PATCH(
   const [updated] = await db
     .update(agendaEvents)
     .set(updates)
-    .where(and(eq(agendaEvents.id, id), eq(agendaEvents.organizationId, user.organizationId)))
+    .where(and(...scopeConditions(user, id)))
     .returning();
 
   if (!updated) {
@@ -116,7 +121,7 @@ export async function DELETE(
   const { id } = await params;
   const [deleted] = await db
     .delete(agendaEvents)
-    .where(and(eq(agendaEvents.id, id), eq(agendaEvents.organizationId, user.organizationId)))
+    .where(and(...scopeConditions(user, id)))
     .returning({ id: agendaEvents.id });
 
   if (!deleted) {
