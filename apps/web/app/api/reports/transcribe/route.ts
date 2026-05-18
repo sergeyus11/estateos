@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         agentId: user.id,
         voiceUrl: audioUrl,
         transcript,
-        fields,
+        fields: fields as ReportFields,
         rounds: [],
         followUpQuestion: followUpQ,
         status: 'draft',
