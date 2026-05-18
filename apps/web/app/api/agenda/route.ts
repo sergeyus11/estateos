@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { db, agendaEvents } from '@estateos/db';
 import { requireAgentOrAdmin } from '@/lib/auth-server';
+import { mskDayBounds } from '@/lib/time';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,17 +20,6 @@ const CreateEventSchema = z.object({
   notes: z.string().nullable().optional(),
   source: z.enum(['manual', 'voice', 'auto_from_report']).optional().default('manual'),
 });
-
-function getMskDayBounds(now = new Date()): { start: Date; end: Date } {
-  const mskOffset = 3 * 60 * 60 * 1000;
-  const mskNow = new Date(now.getTime() + mskOffset);
-  const start = new Date(
-    Date.UTC(mskNow.getUTCFullYear(), mskNow.getUTCMonth(), mskNow.getUTCDate()) -
-      mskOffset
-  );
-  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-  return { start, end };
-}
 
 export async function GET(req: NextRequest) {
   let user;
@@ -48,7 +38,7 @@ export async function GET(req: NextRequest) {
   ];
 
   if (dateParam === 'today') {
-    const { start, end } = getMskDayBounds();
+    const { mskStart: start, mskEnd: end } = mskDayBounds();
     conditions.push(gte(agendaEvents.scheduledAt, start));
     conditions.push(lt(agendaEvents.scheduledAt, end));
   }

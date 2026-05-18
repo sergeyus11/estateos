@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mskDayBounds } from '@/lib/time';
 
 describe('mskDayBounds', () => {
-  it('returns correct bounds for 13:30 UTC (16:30 MSK) on 2026-05-18', () => {
+  it('returns correct bounds for 10:30 UTC (13:30 MSK) on 2026-05-18', () => {
     const now = new Date('2026-05-18T10:30:00.000Z');
     const { mskStart, mskEnd, todayStr } = mskDayBounds(now);
     expect(mskStart.toISOString()).toBe('2026-05-17T21:00:00.000Z');
