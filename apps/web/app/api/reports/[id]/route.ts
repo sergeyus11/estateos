@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 const PatchReportSchema = z.object({
   fields: z.record(z.union([z.string(), z.boolean(), z.null()])).optional(),
   contactType: z.enum(['showing', 'whatsapp', 'phone', 'other']).optional(),
-  status: z.enum(['draft', 'final']).optional(),
+  status: z.literal('final').optional(),
 });
 
 export async function GET(

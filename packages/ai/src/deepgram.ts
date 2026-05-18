@@ -28,6 +28,7 @@ export async function transcribe(
   let lastErr: unknown;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    let timerId: ReturnType<typeof setTimeout> | undefined;
     try {
       const { result, error } = await Promise.race([
         dg.listen.prerecorded.transcribeFile(audio, {
@@ -36,12 +37,12 @@ export async function transcribe(
           punctuate: true,
           smart_format: true,
         }),
-        new Promise<never>((_, reject) =>
-          setTimeout(
+        new Promise<never>((_, reject) => {
+          timerId = setTimeout(
             () => reject(new Error('Deepgram timeout')),
             DEEPGRAM_TIMEOUT_MS
-          )
-        ),
+          );
+        }),
       ]);
       if (error) throw new Error(`Deepgram: ${error.message}`);
       const transcript =
@@ -52,6 +53,8 @@ export async function transcribe(
       if (attempt < MAX_RETRIES) {
         console.warn(`[deepgram] attempt ${attempt + 1} failed, retrying...`, e);
       }
+    } finally {
+      if (timerId) clearTimeout(timerId);
     }
   }
 
