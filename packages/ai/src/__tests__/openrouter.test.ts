@@ -123,4 +123,13 @@ describe('computeCostUsd', () => {
   it('returns 0 если usage undefined', () => {
     expect(computeCostUsd('moonshotai/kimi-k2', undefined)).toBe(0);
   });
+
+  it('computeCostUsd prototype-safe: returns 0 для prototype keys', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(computeCostUsd('toString', { promptTokens: 1000, completionTokens: 500 })).toBe(0);
+    expect(computeCostUsd('hasOwnProperty', { promptTokens: 1000, completionTokens: 500 })).toBe(0);
+    expect(computeCostUsd('constructor', { promptTokens: 1000, completionTokens: 500 })).toBe(0);
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
 });

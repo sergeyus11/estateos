@@ -176,9 +176,10 @@ export function computeCostUsd(
   usage: { promptTokens: number; completionTokens: number } | undefined
 ): number {
   if (!usage) return 0;
-  const price = PRICING[model] ?? { in: 0, out: 0 };
-  if (!PRICING[model]) {
+  const price = Object.hasOwn(PRICING, model) ? PRICING[model] : null;
+  if (!price) {
     console.warn(`[morningNarrator] No PRICING for model "${model}", reporting cost as 0`);
+    return 0;
   }
   return (
     (usage.promptTokens / 1_000_000) * price.in +
