@@ -55,7 +55,7 @@ ID columns у `users`, `sessions`, `verification_tokens`, `organizations` — **
 1. Spec → `hq/docs/superpowers/specs/YYYY-MM-DD-...md`
 2. Plan → `hq/docs/superpowers/plans/YYYY-MM-DD-...md` (Phase 0) или `docs/superpowers/plans/` (Phase 1+)
 3. Issue в `sergeyus11/estateos` (epic + chunks как sub-issues)
-4. Worktree per chunk: `git worktree add /tmp/estateos-chunk-N feature/chunk-N`
+4. Worktree per chunk: `git worktree add .worktrees/chunk-N feature/chunk-N` (канон `<repo>/.worktrees/<slug>`; `/tmp` noexec на TrueNAS)
 5. Codex-implementer executes, opens PR
 6. Code-review (Opus + codex-reviewer)
 7. Merge to main, deploy via `docker compose up -d --build web`
