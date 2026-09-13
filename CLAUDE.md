@@ -20,4 +20,4 @@
 
 ### Codex CLI invocation
 
-Имплементация — через subagent `codex-implementer` (не прямой вызов `codex`). Канон в [`/mnt/apps/hq/AGENTS.md`](file:///mnt/apps/hq/AGENTS.md) §Codex CLI config.
+Имплементация — через subagent `codex-implementer` (не прямой вызов `codex`). Канон в [`/mnt/apps/hq/AGENTS.md`](file:///mnt/apps/hq/AGENTS.md) § Роли и в `AGENTS.md § Codex CLI config` этого репо.

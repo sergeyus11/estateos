@@ -43,22 +43,22 @@ ID columns у `users`, `sessions`, `verification_tokens`, `organizations` — **
 
 ## Codex CLI config
 
-См. `/mnt/apps/hq/AGENTS.md` §Codex CLI config. Tldr:
-- `reasoning_effort=high`
-- worktree isolation для каждой задачи
-- subagent `codex-implementer` принимает задачу + spec/plan, возвращает diff
-- subagent `codex-reviewer` для финального review (read-only)
-- Spec-review между ними — Opus
+Канон — `/mnt/apps/hq/AGENTS.md § Роли` и скилл `dev-workflow` (пересмотрено 13.09.2026, hq#1355):
+
+- **Путь по цене ошибки:** spike (вопрос → ответ, без кода) · bounded (правка существующего: issue, дизайн в чате, «да» CEO) · architectural (новое, деньги, прод, права — спека и план). Классифицирует `superpowers:brainstorming`.
+- **Исполнитель:** subagent `codex-implementer`, `gpt-5.6-terra`, effort **medium** явными флагами; механика и провенанс — `/mnt/apps/hq/bin/codex-run.sh` + `codex-commit.sh`, трейлеры только из связанного прогона.
+- **Worktree обязателен:** `git worktree add .worktrees/codex-<slug> -b codex/<slug> origin/main` — только внутри репо, sibling-папки запрещены (hq#801).
+- **Ревью — два, на ветке:** стадия 1 `codex-reviewer` (`gpt-6-astra` high, read-only, снимок head) → стадия 2 Claude свежим субагентом. Critical блокирует merge; третий круг фиксов — только цитатой CEO. Merge — только по «мержим».
 
 ## Workflow
 
-1. Spec → `hq/docs/superpowers/specs/YYYY-MM-DD-...md`
-2. Plan → `hq/docs/superpowers/plans/YYYY-MM-DD-...md` (Phase 0) или `docs/superpowers/plans/` (Phase 1+)
-3. Issue в `sergeyus11/estateos` (epic + chunks как sub-issues)
-4. Worktree per chunk: `git worktree add .worktrees/chunk-N feature/chunk-N` (канон `<repo>/.worktrees/<slug>`; `/tmp` noexec на TrueNAS)
-5. Codex-implementer executes, opens PR
-6. Code-review (Opus + codex-reviewer)
-7. Merge to main, deploy via `docker compose up -d --build web`
+1. Spec (только architectural) → `hq/docs/superpowers/specs/YYYY-MM-DD-...md`
+2. Plan (только architectural) → `hq/docs/superpowers/plans/YYYY-MM-DD-...md` (Phase 0) или `docs/superpowers/plans/` (Phase 1+)
+3. Issue в `sergeyus11/estateos`: architectural — эпик + нативные sub-issues; bounded — один issue, spec и plan не пишутся
+4. Worktree на ветку: `git worktree add .worktrees/<slug> -b feature/<slug> origin/main` — один на задачу; `codex-implementer` работает в нём, отдельный `codex-<slug>` не заводить (канон `<repo>/.worktrees/<slug>`; `/tmp` noexec на TrueNAS)
+5. `codex-implementer` по задаче, тесты вне sandbox
+6. Два ревью ветки: `codex-reviewer` (Astra high) → Claude; PR с тремя следами
+7. Merge по «мержим» CEO; deploy `docker compose up -d --build web` — только по «задеплой»
 8. Smoke E2E против `https://estateos.ru/`
 
 ## Linked specs

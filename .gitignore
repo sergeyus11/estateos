@@ -171,3 +171,6 @@ estateos-design-2.zip
 
 # Off-band secrets
 .secrets/
+
+# Git worktrees (канон hq#801: ветки только в <repo>/.worktrees/<slug>)
+.worktrees/
