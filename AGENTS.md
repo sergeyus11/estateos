@@ -52,10 +52,10 @@ ID columns у `users`, `sessions`, `verification_tokens`, `organizations` — **
 
 ## Workflow
 
-1. Spec → `hq/docs/superpowers/specs/YYYY-MM-DD-...md`
-2. Plan → `hq/docs/superpowers/plans/YYYY-MM-DD-...md` (Phase 0) или `docs/superpowers/plans/` (Phase 1+)
+1. Spec (только architectural) → `hq/docs/superpowers/specs/YYYY-MM-DD-...md`
+2. Plan (только architectural) → `hq/docs/superpowers/plans/YYYY-MM-DD-...md` (Phase 0) или `docs/superpowers/plans/` (Phase 1+)
 3. Issue в `sergeyus11/estateos`: architectural — эпик + нативные sub-issues; bounded — один issue, spec и plan не пишутся
-4. Worktree на ветку: `git worktree add .worktrees/<slug> -b feature/<slug> origin/main` (канон `<repo>/.worktrees/<slug>`; `/tmp` noexec на TrueNAS)
+4. Worktree на ветку: `git worktree add .worktrees/<slug> -b feature/<slug> origin/main` — один на задачу; `codex-implementer` работает в нём, отдельный `codex-<slug>` не заводить (канон `<repo>/.worktrees/<slug>`; `/tmp` noexec на TrueNAS)
 5. `codex-implementer` по задаче, тесты вне sandbox
 6. Два ревью ветки: `codex-reviewer` (Astra high) → Claude; PR с тремя следами
 7. Merge по «мержим» CEO; deploy `docker compose up -d --build web` — только по «задеплой»
