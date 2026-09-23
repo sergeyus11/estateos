@@ -1,5 +1,7 @@
 # EstateOS — CLAUDE.md (Claude Code wrapper)
 
+> ⚠ Пересмотрено 23.09.2026, решение CEO (sergeyus11/hq#1591, dev-workflow v2): код пишет Claude сам в worktree; `codex-implementer` — только запас (gpt-6-sol medium); ревью стадии 1 — `codex-reviewer` на gpt-6-sol high, Astra и Terra выключены; стадия 2 Claude — только ветки с признаками риска (деньги, 1С, прод-данные, права, стык репо, интеграции). Канон — `/mnt/apps/hq/AGENTS.md § Роли`, процедура — скилл `dev-workflow`. Упоминания Terra, Astra и делегирования Codex ниже — история до этой даты.
+
 > **Канон в [`AGENTS.md`](AGENTS.md)** — читай первым.
 
 ## Claude Code-специфика
